@@ -50,7 +50,7 @@ J-POP のコード進行を検索・閲覧できるビューア。
 | グラフ | Chart.js 4 |
 | 静的ファイル | WhiteNoise |
 | WSGI | Gunicorn |
-| デプロイ | Railway |
+| デプロイ | Render |
 
 ## 技術的なこだわり
 

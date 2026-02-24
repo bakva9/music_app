@@ -19,7 +19,7 @@ CSRF_COOKIE_SECURE = not DEBUG
 # Email (use console backend since we don't need real emails)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# Logging - show errors in Railway logs
+# Logging - show errors in deploy logs
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

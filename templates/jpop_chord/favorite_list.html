@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}お気に入り - MusicApp{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">お気に入り</h1>
+    <a href="{% url 'jpop_chord:song_list' %}" class="text-primary-600 dark:text-primary-400 hover:underline text-sm">&larr; コード譜一覧</a>
+</div>
+
+{% if favorites %}
+<div class="grid gap-3">
+    {% for fav in favorites %}
+    <a href="{% url 'jpop_chord:song_detail' fav.song.pk %}"
+       class="block bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 hover:shadow-md transition">
+        <div class="flex justify-between items-center">
+            <div>
+                <div class="font-bold">{{ fav.song.title }}</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">{{ fav.song.artist }}</div>
+            </div>
+            <div class="text-red-500">&#10084;</div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-12 text-gray-500 dark:text-gray-400">
+    お気に入りの曲がまだありません
+</div>
+{% endif %}
+{% endblock %}

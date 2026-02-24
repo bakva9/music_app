@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}練習タイマー - MusicApp{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto" x-data="practiceTimer()">
+    <h1 class="text-2xl font-bold mb-6 text-center">練習タイマー</h1>
+
+    <!-- Timer Display -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-8 border border-gray-200 dark:border-gray-700 text-center mb-6">
+        <div class="text-6xl font-mono font-bold text-primary-600 dark:text-primary-400 mb-6" x-text="formatTime()"></div>
+        <div class="flex justify-center gap-3">
+            <button @click="start()" x-show="!running && !paused"
+                    class="bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 font-medium text-lg">開始</button>
+            <button @click="pause()" x-show="running"
+                    class="bg-yellow-500 text-white px-8 py-3 rounded-lg hover:bg-yellow-600 font-medium text-lg">一時停止</button>
+            <button @click="resume()" x-show="paused"
+                    class="bg-primary-600 text-white px-8 py-3 rounded-lg hover:bg-primary-700 font-medium text-lg">再開</button>
+            <button @click="stop()" x-show="running || paused"
+                    class="bg-red-500 text-white px-8 py-3 rounded-lg hover:bg-red-600 font-medium text-lg">停止</button>
+        </div>
+    </div>
+
+    <!-- Save Form (shown after stopping) -->
+    <div x-show="stopped && elapsed > 0" x-cloak
+         class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+        <h2 class="text-lg font-bold mb-4">セッションを保存</h2>
+        <form hx-post="{% url 'guitarlog:save_session' %}" hx-target="#save-result" hx-swap="innerHTML" class="space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="duration_minutes" :value="Math.ceil(elapsed / 60)">
+            <div>
+                <label class="block text-sm font-medium mb-1">練習時間</label>
+                <div class="text-2xl font-bold" x-text="Math.ceil(elapsed / 60) + '分'"></div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-2">評価</label>
+                <div class="flex gap-2">
+                    <template x-for="i in [1,2,3,4,5]">
+                        <button type="button" @click="rating = i"
+                                :class="i <= rating ? 'text-yellow-500 text-2xl' : 'text-gray-300 dark:text-gray-600 text-2xl'"
+                                x-text="i <= rating ? '★' : '☆'"></button>
+                    </template>
+                    <input type="hidden" name="rating" :value="rating">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">メモ</label>
+                <textarea name="memo" rows="3"
+                          class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2"></textarea>
+            </div>
+            <button type="submit" class="w-full bg-primary-600 text-white py-2 rounded-lg hover:bg-primary-700 font-medium">保存</button>
+        </form>
+        <div id="save-result"></div>
+    </div>
+
+    <div class="mt-6 text-center">
+        <a href="{% url 'guitarlog:home' %}" class="text-primary-600 dark:text-primary-400 hover:underline">&larr; 練習記録に戻る</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function practiceTimer() {
+    return {
+        elapsed: 0,
+        running: false,
+        paused: false,
+        stopped: false,
+        rating: 0,
+        _interval: null,
+
+        start() {
+            this.elapsed = 0;
+            this.running = true;
+            this.paused = false;
+            this.stopped = false;
+            this._interval = setInterval(() => { this.elapsed++; }, 1000);
+        },
+
+        pause() {
+            this.running = false;
+            this.paused = true;
+            clearInterval(this._interval);
+        },
+
+        resume() {
+            this.running = true;
+            this.paused = false;
+            this._interval = setInterval(() => { this.elapsed++; }, 1000);
+        },
+
+        stop() {
+            this.running = false;
+            this.paused = false;
+            this.stopped = true;
+            clearInterval(this._interval);
+        },
+
+        formatTime() {
+            const h = Math.floor(this.elapsed / 3600);
+            const m = Math.floor((this.elapsed % 3600) / 60);
+            const s = this.elapsed % 60;
+            return (h > 0 ? h + ':' : '') +
+                   String(m).padStart(2, '0') + ':' +
+                   String(s).padStart(2, '0');
+        }
+    };
+}
+</script>
+{% endblock %}

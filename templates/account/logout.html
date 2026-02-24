@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}ログアウト - MusicApp{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-8 border border-gray-200 dark:border-gray-700 text-center">
+        <h1 class="text-2xl font-bold mb-4">ログアウト</h1>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">ログアウトしますか？</p>
+        <form method="POST" action="{% url 'account_logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-600 text-white py-2 px-6 rounded-lg hover:bg-red-700 font-medium">
+                ログアウト
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

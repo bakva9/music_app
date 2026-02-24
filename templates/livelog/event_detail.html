@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.artist }} - ライブ記録{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-start mb-6">
+        <div>
+            <h1 class="text-2xl font-bold">{{ event.artist }}</h1>
+            {% if event.title %}<p class="text-gray-500 dark:text-gray-400">{{ event.title }}</p>{% endif %}
+            <div class="flex gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
+                <span>{{ event.date|date:"Y年m月d日" }}</span>
+                {% if event.venue %}<span>@ {{ event.venue }}</span>{% endif %}
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <a href="{% url 'livelog:event_edit' event.pk %}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">編集</a>
+            <a href="{% url 'livelog:event_delete' event.pk %}" class="text-sm text-red-500 hover:underline">削除</a>
+        </div>
+    </div>
+
+    {% if days_until is not None %}
+    <div class="bg-primary-50 dark:bg-primary-900/30 rounded-xl p-6 border border-primary-200 dark:border-primary-800 text-center mb-6"
+         x-data x-init="setInterval(() => $el.querySelector('[data-countdown]').textContent = (() => { const d = Math.ceil((new Date('{{ event.date|date:'Y-m-d' }}') - new Date()) / 86400000); return d <= 0 ? '今日！' : d + '日'; })(), 60000)">
+        <div class="text-sm text-primary-600 dark:text-primary-400">ライブまであと</div>
+        <div class="text-4xl font-bold text-primary-700 dark:text-primary-300" data-countdown>
+            {% if days_until == 0 %}今日！{% else %}{{ days_until }}日{% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Ticket Info -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 mb-4">
+        <div class="flex justify-between items-center mb-3">
+            <h2 class="text-lg font-bold">チケット情報</h2>
+            <a href="{% url 'livelog:ticket_edit' event.pk %}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">{% if ticket %}編集{% else %}追加{% endif %}</a>
+        </div>
+        {% if ticket %}
+        <div class="grid grid-cols-3 gap-4 text-sm">
+            <div><span class="text-gray-500 dark:text-gray-400">種別:</span> {{ ticket.get_ticket_type_display }}</div>
+            {% if ticket.seat_info %}<div><span class="text-gray-500 dark:text-gray-400">座席:</span> {{ ticket.seat_info }}</div>{% endif %}
+            {% if ticket.price %}<div><span class="text-gray-500 dark:text-gray-400">価格:</span> ¥{{ ticket.price|floatformat:"0" }}</div>{% endif %}
+        </div>
+        {% else %}
+        <p class="text-sm text-gray-400">未登録</p>
+        {% endif %}
+    </div>
+
+    <!-- Setlist -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 mb-4">
+        <h2 class="text-lg font-bold mb-3">セットリスト</h2>
+        <div id="setlist-content">
+            {% include "livelog/_setlist.html" %}
+        </div>
+        <form hx-post="{% url 'livelog:setlist_add' event.pk %}" hx-target="#setlist-content" hx-swap="innerHTML"
+              class="flex gap-2 mt-3">
+            {% csrf_token %}
+            <input type="text" name="song_title" placeholder="曲名を入力..."
+                   class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm" required>
+            <select name="song_type" class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-2 text-sm">
+                <option value="normal">通常</option>
+                <option value="encore">アンコール</option>
+                <option value="double_encore">ダブルアンコール</option>
+            </select>
+            <button type="submit" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 text-sm font-medium">追加</button>
+        </form>
+    </div>
+
+    <!-- Impression -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 mb-4">
+        <div class="flex justify-between items-center mb-3">
+            <h2 class="text-lg font-bold">感想</h2>
+            <a href="{% url 'livelog:impression_edit' event.pk %}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">{% if impression %}編集{% else %}書く{% endif %}</a>
+        </div>
+        {% if impression %}
+        <div class="text-yellow-500 mb-2">{% for i in "12345" %}{% if forloop.counter <= impression.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+        <p class="text-sm whitespace-pre-line">{{ impression.text }}</p>
+        {% else %}
+        <p class="text-sm text-gray-400">まだ感想がありません</p>
+        {% endif %}
+    </div>
+
+    <!-- Expenses for this event -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 mb-4">
+        <div class="flex justify-between items-center mb-3">
+            <h2 class="text-lg font-bold">費用</h2>
+            <a href="{% url 'livelog:expense_create' %}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">追加</a>
+        </div>
+        {% if event.expenses.all %}
+        <div class="space-y-1">
+            {% for exp in event.expenses.all %}
+            <div class="flex justify-between text-sm">
+                <span>{{ exp.get_category_display }}{% if exp.memo %} ({{ exp.memo }}){% endif %}</span>
+                <span class="font-mono">¥{{ exp.amount|floatformat:"0" }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-sm text-gray-400">費用が登録されていません</p>
+        {% endif %}
+    </div>
+
+    <a href="{% url 'livelog:event_list' %}" class="text-primary-600 dark:text-primary-400 hover:underline">&larr; 一覧に戻る</a>
+</div>
+{% endblock %}

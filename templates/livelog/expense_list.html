@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}費用一覧 - MusicApp{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">費用一覧</h1>
+    <div class="flex gap-3">
+        <a href="{% url 'livelog:expense_summary' %}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">サマリー</a>
+        <a href="{% url 'livelog:expense_create' %}" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 text-sm font-medium">費用を追加</a>
+    </div>
+</div>
+
+{% if expenses %}
+<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+    {% for expense in expenses %}
+    <div class="flex justify-between items-center p-4 {% if not forloop.last %}border-b border-gray-100 dark:border-gray-700{% endif %}">
+        <div>
+            <span class="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700">{{ expense.get_category_display }}</span>
+            {% if expense.memo %}<span class="text-sm text-gray-500 dark:text-gray-400 ml-2">{{ expense.memo }}</span>{% endif %}
+            {% if expense.event %}<span class="text-xs text-gray-400 ml-2">{{ expense.event.artist }}</span>{% endif %}
+        </div>
+        <div class="text-right">
+            <div class="font-mono font-bold">¥{{ expense.amount|floatformat:"0" }}</div>
+            <div class="text-xs text-gray-400">{{ expense.date|date:"Y/m/d" }}</div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-12 text-gray-500 dark:text-gray-400">費用が登録されていません</div>
+{% endif %}
+
+<div class="mt-6">
+    <a href="{% url 'livelog:event_list' %}" class="text-primary-600 dark:text-primary-400 hover:underline">&larr; ライブ記録に戻る</a>
+</div>
+{% endblock %}

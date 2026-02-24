@@ -1,0 +1,21 @@
+{% if event.setlist.all %}
+<div class="space-y-1">
+    {% for entry in event.setlist.all %}
+    <div class="flex justify-between items-center py-1 {% if entry.song_type == 'encore' %}border-t border-gray-200 dark:border-gray-700 pt-2 mt-2{% elif entry.song_type == 'double_encore' %}border-t-2 border-gray-300 dark:border-gray-600 pt-2 mt-2{% endif %}">
+        <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-400 w-6 text-right">{{ entry.order }}.</span>
+            <span class="font-medium">{{ entry.song_title }}</span>
+            {% if entry.song_type != 'normal' %}
+            <span class="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 px-2 py-0.5 rounded">{{ entry.get_song_type_display }}</span>
+            {% endif %}
+            {% if entry.notes %}<span class="text-xs text-gray-400">{{ entry.notes }}</span>{% endif %}
+        </div>
+        <button hx-post="{% url 'livelog:setlist_delete' event.pk entry.pk %}"
+                hx-target="#setlist-content" hx-swap="innerHTML" hx-confirm="削除しますか？"
+                class="text-red-400 hover:text-red-600 text-sm">×</button>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-sm text-gray-400">セットリストが登録されていません</p>
+{% endif %}

@@ -1,0 +1,6 @@
+<button hx-post="{% url 'jpop_chord:toggle_favorite' song.pk %}"
+        hx-target="#favorite-btn"
+        hx-swap="innerHTML"
+        class="p-2 rounded-lg border {% if is_favorite %}border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/30 text-red-500{% else %}border-gray-300 dark:border-gray-600 text-gray-400 hover:text-red-500{% endif %} transition">
+    {% if is_favorite %}&#10084;{% else %}&#9825;{% endif %}
+</button>

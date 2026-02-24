@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}費用サマリー - MusicApp{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-2xl font-bold mb-6">費用サマリー</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-bold mb-4">カテゴリ別</h2>
+            <canvas id="categoryChart" height="200"></canvas>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+            <h2 class="text-lg font-bold mb-4">月次推移</h2>
+            <canvas id="monthlyChart" height="200"></canvas>
+        </div>
+    </div>
+
+    <div class="mt-6">
+        <a href="{% url 'livelog:expense_list' %}" class="text-primary-600 dark:text-primary-400 hover:underline">&larr; 費用一覧に戻る</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const COLORS = ['#0ea5e9', '#f97316', '#22c55e', '#a855f7', '#ef4444', '#eab308'];
+fetch('{% url "livelog:expense_summary_data" %}')
+    .then(r => r.json())
+    .then(data => {
+        if (data.by_category.length) {
+            new Chart(document.getElementById('categoryChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: data.by_category.map(c => c.category),
+                    datasets: [{ data: data.by_category.map(c => c.total), backgroundColor: COLORS }]
+                },
+                options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+        if (data.monthly.length) {
+            const isDark = document.documentElement.classList.contains('dark');
+            const sorted = data.monthly.reverse();
+            new Chart(document.getElementById('monthlyChart'), {
+                type: 'bar',
+                data: {
+                    labels: sorted.map(m => m.month),
+                    datasets: [{ label: '費用（円）', data: sorted.map(m => m.total), backgroundColor: '#0ea5e9', borderRadius: 4 }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true, ticks: { color: isDark ? '#9ca3af' : '#6b7280' } },
+                        x: { ticks: { color: isDark ? '#9ca3af' : '#6b7280' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

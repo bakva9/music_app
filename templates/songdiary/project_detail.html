@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }} - 作曲管理{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto" x-data="audioRecorder()">
+    <!-- Header -->
+    <div class="flex justify-between items-start mb-6">
+        <div>
+            <h1 class="text-2xl font-bold">{{ project.title }}</h1>
+            <div class="flex items-center gap-3 mt-2">
+                <span class="text-sm px-3 py-1 rounded-full
+                    {% if project.status == 'done' %}bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300
+                    {% elif project.status == 'idea' %}bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300
+                    {% else %}bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300{% endif %}">
+                    {{ project.get_status_display }}
+                </span>
+                {% if project.key %}<span class="text-sm text-gray-500">Key: {{ project.key }}</span>{% endif %}
+                {% if project.bpm %}<span class="text-sm text-gray-500">{{ project.bpm }} BPM</span>{% endif %}
+            </div>
+            {% if project.tag_list %}
+            <div class="flex flex-wrap gap-1 mt-2">
+                {% for tag in project.tag_list %}
+                <span class="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">#{{ tag }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% if project.description %}
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">{{ project.description }}</p>
+            {% endif %}
+        </div>
+        <div class="flex gap-2">
+            <a href="{% url 'songdiary:project_edit' project.pk %}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">編集</a>
+            <a href="{% url 'songdiary:project_delete' project.pk %}" class="text-sm text-red-500 hover:underline">削除</a>
+        </div>
+    </div>
+
+    <!-- Add Memo Section -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 mb-6">
+        <h2 class="text-lg font-bold mb-3">メモを追加</h2>
+        <div class="space-y-3">
+            <!-- Text Memo -->
+            <form hx-post="{% url 'songdiary:add_text_memo' project.pk %}" hx-target="#timeline" hx-swap="innerHTML" class="flex gap-2">
+                {% csrf_token %}
+                <input type="text" name="text_content" placeholder="テキストメモを入力..."
+                       class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm" required>
+                <button type="submit" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 text-sm">追加</button>
+            </form>
+
+            <div class="flex gap-2">
+                <!-- Photo Upload -->
+                <form hx-post="{% url 'songdiary:add_photo_memo' project.pk %}" hx-target="#timeline" hx-swap="innerHTML"
+                      hx-encoding="multipart/form-data" class="flex-1">
+                    {% csrf_token %}
+                    <label class="flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm">
+                        <span>📷 写真</span>
+                        <input type="file" name="photo_file" accept="image/*" class="hidden"
+                               onchange="this.closest('form').requestSubmit()">
+                    </label>
+                </form>
+
+                <!-- Audio Recording -->
+                <button @click="toggleRecording()" type="button"
+                        :class="recording ? 'bg-red-500 text-white' : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                        class="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm">
+                    <span x-text="recording ? '⏹ 録音停止' : '🎤 音声録音'"></span>
+                </button>
+            </div>
+            <div x-show="recordingTime > 0 && recording" class="text-center text-sm text-red-500">
+                録音中... <span x-text="Math.floor(recordingTime / 60) + ':' + String(recordingTime % 60).padStart(2, '0')"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timeline -->
+    <h2 class="text-lg font-bold mb-3">タイムライン</h2>
+    <div id="timeline">
+        {% include "songdiary/_timeline.html" %}
+    </div>
+
+    <div class="mt-6">
+        <a href="{% url 'songdiary:project_list' %}" class="text-primary-600 dark:text-primary-400 hover:underline">&larr; プロジェクト一覧に戻る</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function audioRecorder() {
+    return {
+        recording: false,
+        recordingTime: 0,
+        _recorder: null,
+        _chunks: [],
+        _timer: null,
+
+        async toggleRecording() {
+            if (this.recording) {
+                this._recorder.stop();
+                this.recording = false;
+                clearInterval(this._timer);
+            } else {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    this._recorder = new MediaRecorder(stream);
+                    this._chunks = [];
+                    this._recorder.ondataavailable = (e) => this._chunks.push(e.data);
+                    this._recorder.onstop = () => {
+                        stream.getTracks().forEach(t => t.stop());
+                        const blob = new Blob(this._chunks, { type: 'audio/webm' });
+                        const formData = new FormData();
+                        formData.append('audio_file', blob, 'recording.webm');
+                        formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+                        fetch('{% url "songdiary:add_audio_memo" project.pk %}', {
+                            method: 'POST',
+                            body: formData,
+                            headers: { 'HX-Request': 'true' }
+                        })
+                        .then(r => r.text())
+                        .then(html => { document.getElementById('timeline').innerHTML = html; });
+                    };
+                    this._recorder.start();
+                    this.recording = true;
+                    this.recordingTime = 0;
+                    this._timer = setInterval(() => this.recordingTime++, 1000);
+                } catch (e) {
+                    alert('マイクへのアクセスが許可されていません');
+                }
+            }
+        }
+    };
+}
+</script>
+{% endblock %}

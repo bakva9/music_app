@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}{{ song.title }} - コード譜{% endblock %}
+
+{% block content %}
+<div x-data="chordViewer()" class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-start mb-6">
+        <div>
+            <h1 class="text-2xl font-bold">{{ song.title }}</h1>
+            <p class="text-gray-500 dark:text-gray-400">{{ song.artist }}</p>
+            <div class="flex gap-3 mt-2 text-sm">
+                <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">Key: {{ song.original_key }}</span>
+                {% if song.bpm %}<span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">{{ song.bpm }} BPM</span>{% endif %}
+                <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">{{ song.get_difficulty_display }}</span>
+            </div>
+        </div>
+        {% if user.is_authenticated %}
+        <div id="favorite-btn">
+            {% include "jpop_chord/_favorite_button.html" %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Controls -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 mb-6 border border-gray-200 dark:border-gray-700">
+        <div class="flex flex-wrap gap-4 items-center">
+            <!-- Capo -->
+            <div class="flex items-center gap-2">
+                <label class="text-sm font-medium">カポ:</label>
+                <button @click="adjustCapo(-1)" class="w-8 h-8 rounded bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 flex items-center justify-center font-bold">-</button>
+                <span class="w-6 text-center font-mono" x-text="capo"></span>
+                <button @click="adjustCapo(1)" class="w-8 h-8 rounded bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 flex items-center justify-center font-bold">+</button>
+            </div>
+            <!-- Key Transpose -->
+            <div class="flex items-center gap-2">
+                <label class="text-sm font-medium">キー:</label>
+                <button @click="adjustKey(-1)" class="w-8 h-8 rounded bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 flex items-center justify-center font-bold">-</button>
+                <span class="w-10 text-center font-mono" x-text="displayKey()"></span>
+                <button @click="adjustKey(1)" class="w-8 h-8 rounded bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 flex items-center justify-center font-bold">+</button>
+            </div>
+            <!-- Auto Scroll -->
+            <div class="flex items-center gap-2 ml-auto">
+                <button @click="toggleScroll()"
+                        :class="scrolling ? 'bg-red-500 hover:bg-red-600' : 'bg-primary-600 hover:bg-primary-700'"
+                        class="text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+                    <span x-text="scrolling ? '停止' : '自動スクロール'"></span>
+                </button>
+                <input type="range" min="0.5" max="3" step="0.1" x-model="scrollSpeed"
+                       class="w-24" title="スクロール速度">
+                <span class="text-xs text-gray-500" x-text="scrollSpeed + 'x'"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chord Sections -->
+    <div id="chord-content" class="space-y-6">
+        {% for section in song.sections.all %}
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
+            <div class="flex items-center mb-3">
+                <span class="inline-block px-3 py-1 rounded-full text-sm font-bold
+                    {% if section.section_type == 'chorus' %}bg-pink-100 dark:bg-pink-900 text-pink-700 dark:text-pink-300
+                    {% elif section.section_type == 'verse' %}bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300
+                    {% elif section.section_type == 'verse2' %}bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300
+                    {% elif section.section_type == 'bridge' %}bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300
+                    {% else %}bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300
+                    {% endif %}">
+                    {{ section.get_section_type_display }}
+                </span>
+            </div>
+            <div class="chord-bars grid grid-cols-4 gap-2">
+                {% for bar in section.chords %}
+                    {% for chord in bar %}
+                    <div class="text-center py-2 border border-gray-100 dark:border-gray-700 rounded
+                                {% if forloop.parentloop.first and forloop.first %}{% endif %}">
+                        <span class="chord-name font-mono text-lg font-bold text-primary-700 dark:text-primary-400"
+                              data-original="{{ chord }}">{{ chord|default:"−" }}</span>
+                    </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center py-12 text-gray-500 dark:text-gray-400">
+            コード進行が登録されていません
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="mt-6">
+        <a href="{% url 'jpop_chord:song_list' %}" class="text-primary-600 dark:text-primary-400 hover:underline">&larr; 一覧に戻る</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const FLAT_MAP = {'Db': 'C#', 'Eb': 'D#', 'Gb': 'F#', 'Ab': 'G#', 'Bb': 'A#'};
+const DISPLAY_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+function normalizeRoot(root) {
+    if (FLAT_MAP[root]) return FLAT_MAP[root];
+    return root;
+}
+
+function transposeChord(chord, semitones) {
+    if (!chord || chord === '−' || chord === '-' || chord === '') return chord;
+    const match = chord.match(/^([A-G][#b]?)(.*)/);
+    if (!match) return chord;
+    let root = normalizeRoot(match[1]);
+    const suffix = match[2];
+    const idx = NOTES.indexOf(root);
+    if (idx === -1) return chord;
+    const newIdx = (idx + semitones + 120) % 12;
+    return DISPLAY_SHARP[newIdx] + suffix;
+}
+
+function chordViewer() {
+    return {
+        capo: 0,
+        keyOffset: 0,
+        scrolling: false,
+        scrollSpeed: 1.0,
+        originalKey: '{{ song.original_key }}',
+        _scrollRAF: null,
+
+        adjustCapo(delta) {
+            this.capo = Math.max(0, Math.min(12, this.capo + delta));
+            this.updateChords();
+        },
+
+        adjustKey(delta) {
+            this.keyOffset = ((this.keyOffset + delta) % 12 + 12) % 12;
+            this.updateChords();
+        },
+
+        displayKey() {
+            const totalShift = (this.keyOffset - this.capo + 120) % 12;
+            return transposeChord(this.originalKey, totalShift);
+        },
+
+        updateChords() {
+            const totalShift = (this.keyOffset - this.capo + 120) % 12;
+            document.querySelectorAll('.chord-name').forEach(el => {
+                const orig = el.dataset.original;
+                if (orig) {
+                    el.textContent = transposeChord(orig, totalShift);
+                }
+            });
+        },
+
+        toggleScroll() {
+            this.scrolling = !this.scrolling;
+            if (this.scrolling) {
+                this.startScroll();
+                if (navigator.wakeLock) {
+                    navigator.wakeLock.request('screen').catch(() => {});
+                }
+            } else {
+                cancelAnimationFrame(this._scrollRAF);
+            }
+        },
+
+        startScroll() {
+            const speed = this.scrollSpeed;
+            const scroll = () => {
+                if (!this.scrolling) return;
+                window.scrollBy(0, speed * 0.5);
+                if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
+                    this.scrolling = false;
+                    return;
+                }
+                this._scrollRAF = requestAnimationFrame(scroll);
+            };
+            this._scrollRAF = requestAnimationFrame(scroll);
+        }
+    };
+}
+</script>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}コード譜一覧 - MusicApp{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">コード譜</h1>
+    {% if user.is_authenticated %}
+    <a href="{% url 'jpop_chord:favorite_list' %}" class="text-primary-600 dark:text-primary-400 hover:underline text-sm">お気に入り一覧</a>
+    {% endif %}
+</div>
+
+<div class="mb-6">
+    <input type="text"
+           name="q"
+           value="{{ query }}"
+           placeholder="曲名・アーティスト名で検索..."
+           class="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-3 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+           hx-get="{% url 'jpop_chord:song_list' %}"
+           hx-trigger="input changed delay:300ms"
+           hx-target="#song-results"
+           hx-swap="innerHTML">
+</div>
+
+<div id="song-results">
+    {% include "jpop_chord/_song_search_results.html" %}
+</div>
+{% endblock %}

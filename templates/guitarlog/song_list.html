@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}練習曲一覧 - MusicApp{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">練習曲</h1>
+    <a href="{% url 'guitarlog:song_create' %}" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 text-sm font-medium">曲を追加</a>
+</div>
+
+<!-- Status Tabs -->
+<div class="flex gap-2 mb-6" x-data="{ tab: '{{ current_status }}' }">
+    {% for value, label in status_choices %}
+    <a href="?status={{ value }}"
+       class="px-4 py-2 rounded-lg text-sm font-medium transition
+              {% if current_status == value %}bg-primary-600 text-white{% else %}bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}">
+        {{ label }}
+    </a>
+    {% endfor %}
+</div>
+
+{% if songs %}
+<div class="space-y-2">
+    {% for song in songs %}
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-center">
+            <div>
+                <span class="font-bold">{{ song.title }}</span>
+                {% if song.artist %}<span class="text-sm text-gray-500 dark:text-gray-400 ml-2">{{ song.artist }}</span>{% endif %}
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="text-xs px-2 py-0.5 rounded
+                        {% if song.status == 'practicing' %}bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300
+                        {% elif song.status == 'can_play' %}bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300
+                        {% else %}bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300{% endif %}">
+                        {{ song.get_status_display }}
+                    </span>
+                    <span class="text-xs text-gray-400">難易度 {{ song.difficulty }}/5</span>
+                    {% if song.target_bpm %}<span class="text-xs text-gray-400">目標 {{ song.target_bpm }}BPM</span>{% endif %}
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <a href="{% url 'guitarlog:song_edit' song.pk %}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">編集</a>
+                <a href="{% url 'guitarlog:song_delete' song.pk %}" class="text-sm text-red-500 hover:underline">削除</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-12 text-gray-500 dark:text-gray-400">練習曲がまだありません</div>
+{% endif %}
+{% endblock %}

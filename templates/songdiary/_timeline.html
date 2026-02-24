@@ -1,0 +1,28 @@
+{% if project.memos.all %}
+<div class="space-y-3">
+    {% for memo in project.memos.all %}
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+        <div class="flex justify-between items-start">
+            <div class="flex items-center gap-2 text-xs text-gray-400 mb-2">
+                {% if memo.memo_type == 'text' %}📝{% elif memo.memo_type == 'audio' %}🎤{% else %}📷{% endif %}
+                <span>{{ memo.created_at|date:"Y/m/d H:i" }}</span>
+            </div>
+            <button hx-post="{% url 'songdiary:delete_memo' project.pk memo.pk %}"
+                    hx-target="#timeline" hx-swap="innerHTML" hx-confirm="削除しますか？"
+                    class="text-red-400 hover:text-red-600 text-xs">×</button>
+        </div>
+        {% if memo.memo_type == 'text' %}
+        <p class="text-sm whitespace-pre-line">{{ memo.text_content }}</p>
+        {% elif memo.memo_type == 'audio' %}
+        <audio controls class="w-full" src="{{ memo.audio_file.url }}"></audio>
+        {% elif memo.memo_type == 'photo' %}
+        <img src="{{ memo.photo_file.url }}" alt="メモ写真" class="rounded-lg max-h-64 object-cover">
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-8 text-gray-500 dark:text-gray-400">
+    メモがまだありません。上のフォームからメモを追加しましょう。
+</div>
+{% endif %}

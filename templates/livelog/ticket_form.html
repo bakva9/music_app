@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}チケット情報 - MusicApp{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+    <h1 class="text-2xl font-bold mb-6">チケット情報</h1>
+    <form method="POST" class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 space-y-4">
+        {% csrf_token %}
+        {% for field in form %}
+        <div>
+            <label for="{{ field.id_for_label }}" class="block text-sm font-medium mb-1">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<p class="text-red-500 text-sm mt-1">{{ field.errors.0 }}</p>{% endif %}
+        </div>
+        {% endfor %}
+        <div class="flex gap-3">
+            <button type="submit" class="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 font-medium">保存</button>
+            <a href="{% url 'livelog:event_detail' event.pk %}" class="text-gray-500 dark:text-gray-400 px-6 py-2 hover:underline">キャンセル</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

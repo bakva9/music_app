@@ -1,0 +1,45 @@
+<nav class="bg-white dark:bg-gray-800 shadow" x-data="{ open: false }">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <a href="{% url 'dashboard:home' %}" class="text-xl font-bold text-primary-600 dark:text-primary-400">
+                    ♪ MusicApp
+                </a>
+                <div class="hidden md:flex ml-8 space-x-4">
+                    <a href="{% url 'jpop_chord:song_list' %}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">コード譜</a>
+                    <a href="{% url 'guitarlog:home' %}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">練習記録</a>
+                    <a href="{% url 'livelog:event_list' %}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">ライブ記録</a>
+                    <a href="{% url 'songdiary:project_list' %}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">作曲管理</a>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3">
+                <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)"
+                        class="p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <span x-show="!darkMode">🌙</span>
+                    <span x-show="darkMode">☀️</span>
+                </button>
+                {% if user.is_authenticated %}
+                <span class="text-sm text-gray-600 dark:text-gray-400 hidden sm:inline">{{ user.display_name|default:user.username }}</span>
+                <a href="{% url 'account_logout' %}" class="text-sm text-red-600 dark:text-red-400 hover:underline">ログアウト</a>
+                {% else %}
+                <a href="{% url 'account_login' %}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">ログイン</a>
+                <a href="{% url 'account_signup' %}" class="bg-primary-600 text-white px-4 py-2 rounded-md text-sm hover:bg-primary-700">新規登録</a>
+                {% endif %}
+                <button @click="open = !open" class="md:hidden p-2 rounded-md text-gray-500 dark:text-gray-400">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        <path x-show="open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div x-show="open" @click.away="open = false" class="md:hidden border-t dark:border-gray-700">
+        <div class="px-2 pt-2 pb-3 space-y-1">
+            <a href="{% url 'jpop_chord:song_list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">コード譜</a>
+            <a href="{% url 'guitarlog:home' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">練習記録</a>
+            <a href="{% url 'livelog:event_list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">ライブ記録</a>
+            <a href="{% url 'songdiary:project_list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">作曲管理</a>
+        </div>
+    </div>
+</nav>

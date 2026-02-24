@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}MusicApp - ダッシュボード{% endblock %}
+
+{% block content %}
+<div class="text-center mb-8">
+    <h1 class="text-3xl font-bold mb-2">MusicApp</h1>
+    <p class="text-gray-600 dark:text-gray-400">あなたの音楽ライフをもっと楽しく</p>
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- JPop Chord -->
+    <a href="{% url 'jpop_chord:song_list' %}" class="group block bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition p-6 border border-gray-200 dark:border-gray-700">
+        <div class="text-4xl mb-3">🎵</div>
+        <h2 class="text-lg font-bold mb-1 group-hover:text-primary-600 dark:group-hover:text-primary-400">コード譜</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">J-POPのコード譜を検索・表示。カポ変換や自動スクロールで演奏をサポート。</p>
+    </a>
+
+    <!-- GuitarLog -->
+    <a href="{% url 'guitarlog:home' %}" class="group block bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition p-6 border border-gray-200 dark:border-gray-700">
+        <div class="text-4xl mb-3">🎸</div>
+        <h2 class="text-lg font-bold mb-1 group-hover:text-primary-600 dark:group-hover:text-primary-400">練習記録</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">ギター練習の時間を記録。ストリークで継続をモチベーションに。</p>
+    </a>
+
+    <!-- LiveLog -->
+    <a href="{% url 'livelog:event_list' %}" class="group block bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition p-6 border border-gray-200 dark:border-gray-700">
+        <div class="text-4xl mb-3">🎤</div>
+        <h2 class="text-lg font-bold mb-1 group-hover:text-primary-600 dark:group-hover:text-primary-400">ライブ記録</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">ライブの思い出を記録。セトリ・感想・費用をまとめて管理。</p>
+    </a>
+
+    <!-- SongDiary -->
+    <a href="{% url 'songdiary:project_list' %}" class="group block bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition p-6 border border-gray-200 dark:border-gray-700">
+        <div class="text-4xl mb-3">🎹</div>
+        <h2 class="text-lg font-bold mb-1 group-hover:text-primary-600 dark:group-hover:text-primary-400">作曲管理</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">作曲プロジェクトの進捗を管理。テキスト・音声・写真メモで記録。</p>
+    </a>
+</div>
+
+{% if user.is_authenticated %}
+<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center">
+        <div class="text-2xl font-bold text-primary-600 dark:text-primary-400" id="stat-favorites">-</div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">お気に入り曲</div>
+    </div>
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center">
+        <div class="text-2xl font-bold text-primary-600 dark:text-primary-400" id="stat-streak">-</div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">練習ストリーク</div>
+    </div>
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center">
+        <div class="text-2xl font-bold text-primary-600 dark:text-primary-400" id="stat-lives">-</div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">ライブ参戦数</div>
+    </div>
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center">
+        <div class="text-2xl font-bold text-primary-600 dark:text-primary-400" id="stat-songs">-</div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">作曲プロジェクト</div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

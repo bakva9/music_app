@@ -7,7 +7,7 @@ input_cls = 'w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-wh
 class LiveEventForm(forms.ModelForm):
     class Meta:
         model = LiveEvent
-        fields = ['artist', 'title', 'date', 'venue']
+        fields = ['artist', 'title', 'date', 'venue', 'thumbnail']
         widgets = {
             'artist': forms.TextInput(attrs={'class': input_cls}),
             'title': forms.TextInput(attrs={'class': input_cls}),

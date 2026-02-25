@@ -8,6 +8,7 @@ class LiveEvent(models.Model):
     title = models.CharField('公演名', max_length=300, blank=True)
     date = models.DateField('公演日')
     venue = models.CharField('会場', max_length=200, blank=True)
+    thumbnail = models.ImageField('サムネイル', upload_to='livelog/thumbnails/', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

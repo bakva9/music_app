@@ -5,6 +5,31 @@
 {% block content %}
 <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow mb-6">練習記録</h1>
 
+<!-- Weekly Goal Progress -->
+{% if goal_progress %}
+<div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 mb-6">
+    <div class="flex justify-between items-center mb-2">
+        <span class="text-sm font-medium text-cosmic-700 dark:text-white/70">今週の練習目標</span>
+        <a href="{% url 'guitarlog:set_goal' %}" class="text-xs text-nebula-500 dark:text-nebula-300 hover:text-nebula-400 transition-colors">変更</a>
+    </div>
+    <div class="w-full bg-cosmic-100/50 dark:bg-white/10 rounded-full h-3 overflow-hidden">
+        <div class="h-full rounded-full transition-all duration-500 {% if goal_progress.pct >= 100 %}bg-gradient-to-r from-green-400 to-emerald-500{% else %}bg-gradient-to-r from-cosmic-500 to-nebula-500{% endif %}"
+             style="width: {{ goal_progress.pct }}%"></div>
+    </div>
+    <div class="flex justify-between mt-2 text-xs text-cosmic-600/60 dark:text-white/50">
+        <span>{{ goal_progress.current }}分 / {{ goal_progress.target }}分</span>
+        <span>{% if goal_progress.pct >= 100 %}達成！{% else %}{{ goal_progress.pct }}%{% endif %}</span>
+    </div>
+</div>
+{% else %}
+<div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 mb-6">
+    <div class="flex justify-between items-center">
+        <span class="text-sm text-cosmic-600/60 dark:text-white/50">週間目標を設定して練習を継続しましょう</span>
+        <a href="{% url 'guitarlog:set_goal' %}" class="text-sm bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-4 py-1.5 rounded-lg font-medium shadow-glow transition-all duration-300">目標を設定</a>
+    </div>
+</div>
+{% endif %}
+
 <!-- Streak & Stats -->
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
     <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10 text-center">

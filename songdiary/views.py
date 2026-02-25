@@ -104,6 +104,20 @@ def add_photo_memo(request, pk):
 
 
 @login_required
+def edit_memo(request, pk, memo_pk):
+    project = get_object_or_404(Project, pk=pk, user=request.user)
+    memo = get_object_or_404(Memo, pk=memo_pk, project=project, memo_type='text')
+    if request.method == 'POST':
+        text = request.POST.get('text_content', '').strip()
+        if text:
+            memo.text_content = text
+            memo.save()
+    if request.headers.get('HX-Request'):
+        return render(request, 'songdiary/_timeline.html', {'project': project})
+    return redirect('songdiary:project_detail', pk=pk)
+
+
+@login_required
 def delete_memo(request, pk, memo_pk):
     project = get_object_or_404(Project, pk=pk, user=request.user)
     Memo.objects.filter(pk=memo_pk, project=project).delete()

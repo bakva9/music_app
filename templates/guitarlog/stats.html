@@ -7,11 +7,37 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-2xl mx-auto">
+<div class="max-w-2xl mx-auto" x-data="statsApp()">
     <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow mb-6">練習統計</h1>
 
+    <!-- Period Tabs -->
+    <div class="flex gap-2 mb-6">
+        <template x-for="p in periods" :key="p.days">
+            <button @click="setPeriod(p.days)"
+                    :class="period === p.days
+                        ? 'bg-gradient-to-r from-cosmic-500 to-nebula-500 text-white shadow-glow'
+                        : 'bg-white/60 dark:bg-white/5 backdrop-blur-md text-cosmic-700 dark:text-white/70 border border-cosmic-200/30 dark:border-white/10 hover:bg-white/80 dark:hover:bg-white/10'"
+                    class="px-2.5 sm:px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200"
+                    x-text="p.label">
+            </button>
+        </template>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 text-center">
+            <div class="text-2xl sm:text-3xl font-mono font-bold text-cosmic-500 dark:text-cosmic-300 text-glow" x-text="totalMinutes"></div>
+            <div class="text-xs text-cosmic-600/60 dark:text-white/50 mt-1">合計（分）</div>
+        </div>
+        <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 text-center">
+            <div class="text-2xl sm:text-3xl font-mono font-bold text-cosmic-500 dark:text-cosmic-300 text-glow" x-text="avgMinutes"></div>
+            <div class="text-xs text-cosmic-600/60 dark:text-white/50 mt-1">1日平均（分）</div>
+        </div>
+    </div>
+
+    <!-- Chart -->
     <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10">
-        <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-4">週間練習時間</h2>
+        <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-4">練習時間の推移</h2>
         <canvas id="weeklyChart" height="200"></canvas>
     </div>
 
@@ -23,39 +49,84 @@
 
 {% block extra_js %}
 <script>
-fetch('{% url "guitarlog:stats_data" %}')
-    .then(r => r.json())
-    .then(data => {
-        const isDark = document.documentElement.classList.contains('dark');
-        new Chart(document.getElementById('weeklyChart'), {
-            type: 'bar',
-            data: {
-                labels: data.labels,
-                datasets: [{
-                    label: '練習時間（分）',
-                    data: data.data,
-                    backgroundColor: isDark ? 'rgba(199, 48, 88, 0.7)' : 'rgba(199, 48, 88, 0.5)',
-                    borderColor: 'rgb(199, 48, 88)',
-                    borderWidth: 1,
-                    borderRadius: 4,
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { color: isDark ? '#9ca3af' : '#6b7280' },
-                        grid: { color: isDark ? '#374151' : '#e5e7eb' }
-                    },
-                    x: {
-                        ticks: { color: isDark ? '#9ca3af' : '#6b7280' },
-                        grid: { display: false }
-                    }
-                },
-                plugins: { legend: { display: false } }
+function statsApp() {
+    return {
+        period: 7,
+        periods: [
+            { days: 7, label: '1週間' },
+            { days: 30, label: '1ヶ月' },
+            { days: 90, label: '3ヶ月' },
+        ],
+        chart: null,
+        totalMinutes: 0,
+        avgMinutes: 0,
+
+        init() {
+            this.loadData();
+        },
+
+        setPeriod(days) {
+            this.period = days;
+            this.loadData();
+        },
+
+        loadData() {
+            fetch('{% url "guitarlog:stats_data" %}?period=' + this.period)
+                .then(r => r.json())
+                .then(data => {
+                    this.totalMinutes = data.total;
+                    this.avgMinutes = data.avg;
+                    this.renderChart(data);
+                });
+        },
+
+        renderChart(data) {
+            const isDark = document.documentElement.classList.contains('dark');
+            const ctx = document.getElementById('weeklyChart');
+
+            if (this.chart) {
+                this.chart.destroy();
             }
-        });
-    });
+
+            const chartType = this.period <= 7 ? 'bar' : 'line';
+
+            this.chart = new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: '練習時間（分）',
+                        data: data.data,
+                        backgroundColor: isDark ? 'rgba(199, 48, 88, 0.7)' : 'rgba(199, 48, 88, 0.5)',
+                        borderColor: 'rgb(199, 48, 88)',
+                        borderWidth: chartType === 'line' ? 2 : 1,
+                        borderRadius: chartType === 'bar' ? 4 : 0,
+                        fill: chartType === 'line',
+                        tension: 0.3,
+                        pointRadius: chartType === 'line' && this.period > 30 ? 0 : 3,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: isDark ? '#9ca3af' : '#6b7280' },
+                            grid: { color: isDark ? '#374151' : '#e5e7eb' }
+                        },
+                        x: {
+                            ticks: {
+                                color: isDark ? '#9ca3af' : '#6b7280',
+                                maxTicksLimit: this.period <= 7 ? 7 : 10,
+                            },
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+    };
+}
 </script>
 {% endblock %}

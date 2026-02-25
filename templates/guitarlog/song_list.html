@@ -25,7 +25,7 @@
     <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-cosmic-200/30 dark:border-white/10">
         <div class="flex justify-between items-center">
             <div>
-                <span class="font-bold">{{ song.title }}</span>
+                <a href="{% url 'guitarlog:song_detail' song.pk %}" class="font-bold hover:text-cosmic-500 dark:hover:text-cosmic-300 transition-colors">{{ song.title }}</a>
                 {% if song.artist %}<span class="text-sm text-cosmic-600/60 dark:text-white/50 ml-2">{{ song.artist }}</span>{% endif %}
                 <div class="flex items-center gap-2 mt-1">
                     <span class="text-xs px-2 py-0.5 rounded

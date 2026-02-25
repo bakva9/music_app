@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}検索: {{ q }} - 残音{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow mb-2">検索結果</h1>
+    {% if q %}
+    <p class="text-sm text-cosmic-600/60 dark:text-white/50 mb-6">「{{ q }}」の検索結果: {{ total }}件</p>
+    {% endif %}
+
+    <!-- Search Form -->
+    <form method="get" class="mb-8">
+        <div class="flex gap-2">
+            <input type="text" name="q" value="{{ q }}" placeholder="曲名、アーティスト、トピックなどを検索..."
+                   class="flex-1 rounded-xl border border-cosmic-200/30 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur-md px-4 py-3 text-sm focus:ring-2 focus:ring-cosmic-400/50 focus:border-cosmic-400/50" autofocus>
+            <button type="submit" class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-6 py-3 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300 text-sm">検索</button>
+        </div>
+    </form>
+
+    {% if q %}
+    <!-- Music Theory Topics -->
+    {% if results.topics %}
+    <div class="mb-6">
+        <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-3">音楽理論</h2>
+        <div class="space-y-2">
+            {% for topic in results.topics %}
+            <a href="{% url 'music_theory:topic_detail' topic.slug %}" class="block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-cosmic-200/30 dark:border-white/10 hover:shadow-glow-sm transition-all duration-300">
+                <span class="font-medium">{{ topic.title }}</span>
+                <span class="text-xs bg-cosmic-100/50 dark:bg-white/10 px-2 py-0.5 rounded ml-2">{{ topic.get_category_display }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Practice Songs -->
+    {% if results.songs %}
+    <div class="mb-6">
+        <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-3">練習曲</h2>
+        <div class="space-y-2">
+            {% for song in results.songs %}
+            <a href="{% url 'guitarlog:song_detail' song.pk %}" class="block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-cosmic-200/30 dark:border-white/10 hover:shadow-glow-sm transition-all duration-300">
+                <span class="font-medium">{{ song.title }}</span>
+                {% if song.artist %}<span class="text-sm text-cosmic-600/60 dark:text-white/50 ml-2">{{ song.artist }}</span>{% endif %}
+                <span class="text-xs px-2 py-0.5 rounded ml-2
+                    {% if song.status == 'practicing' %}bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300
+                    {% elif song.status == 'can_play' %}bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300
+                    {% else %}bg-cosmic-100/50 dark:bg-white/10{% endif %}">{{ song.get_status_display }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Live Events -->
+    {% if results.events %}
+    <div class="mb-6">
+        <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-3">ライブ記録</h2>
+        <div class="space-y-2">
+            {% for event in results.events %}
+            <a href="{% url 'livelog:event_detail' event.pk %}" class="block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-cosmic-200/30 dark:border-white/10 hover:shadow-glow-sm transition-all duration-300">
+                <span class="font-medium">{{ event.artist }}</span>
+                {% if event.title %}<span class="text-sm text-cosmic-600/60 dark:text-white/50 ml-2">{{ event.title }}</span>{% endif %}
+                <span class="text-xs text-cosmic-600/60 dark:text-white/50 ml-2">{{ event.date|date:"Y/m/d" }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Projects -->
+    {% if results.projects %}
+    <div class="mb-6">
+        <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-3">作曲プロジェクト</h2>
+        <div class="space-y-2">
+            {% for project in results.projects %}
+            <a href="{% url 'songdiary:project_detail' project.pk %}" class="block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-cosmic-200/30 dark:border-white/10 hover:shadow-glow-sm transition-all duration-300">
+                <span class="font-medium">{{ project.title }}</span>
+                <span class="text-xs px-2 py-0.5 rounded ml-2
+                    {% if project.status == 'done' %}bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300
+                    {% else %}bg-nebula-100/50 dark:bg-white/10 text-nebula-700 dark:text-nebula-300{% endif %}">{{ project.get_status_display }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if total == 0 %}
+    <div class="text-center py-12 text-cosmic-600/50 dark:text-white/40">
+        「{{ q }}」に一致する結果が見つかりませんでした
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="text-center py-12 text-cosmic-600/50 dark:text-white/40">
+        キーワードを入力して検索してください
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

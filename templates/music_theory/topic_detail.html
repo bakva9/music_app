@@ -13,11 +13,14 @@
                 <span class="bg-cosmic-100/50 dark:bg-white/10 px-2 py-1 rounded text-sm text-white/60">{{ topic.get_difficulty_display }}</span>
             </div>
         </div>
-        {% if user.is_authenticated %}
-        <div id="bookmark-btn">
-            {% include "music_theory/_bookmark_button.html" %}
+        <div class="flex items-center gap-1">
+            {% include "partials/_share_button.html" with share_title=topic.title share_text=topic.summary %}
+            {% if user.is_authenticated %}
+            <div id="bookmark-btn">
+                {% include "music_theory/_bookmark_button.html" %}
+            </div>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
 
     <!-- Summary -->

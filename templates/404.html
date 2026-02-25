@@ -1,14 +1,94 @@
-{% extends "base.html" %}
-
-{% block title %}ページが見つかりません{% endblock %}
-
-{% block content %}
-<div class="text-center py-20">
-    <div class="w-28 h-28 mx-auto mb-6 animate-float">
-        {% include "partials/baku/_baku_sleeping.html" %}
+<!DOCTYPE html>
+<html lang="ja" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - ページが見つかりません | 残音</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Zen Maru Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
+            background:
+                radial-gradient(ellipse at 15% 60%, rgba(199,48,88,0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 25%, rgba(240,112,32,0.08) 0%, transparent 50%),
+                linear-gradient(180deg, #2a0810 0%, #4a0e1e 40%, #1a0a12 100%);
+            color: #e0dff0;
+        }
+        .container { text-align: center; padding: 2rem; }
+        .baku { width: 7rem; height: 7rem; margin: 0 auto 1.5rem; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .error-code {
+            font-size: clamp(4rem, 12vw, 7rem);
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.75rem;
+            text-shadow: 0 0 30px rgba(199,48,88,0.4), 0 0 60px rgba(199,48,88,0.15);
+            background: linear-gradient(135deg, #e06888, #fb923c, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .message { font-size: 1.125rem; color: rgba(255,255,255,0.5); margin-bottom: 0.5rem; }
+        .sub { font-size: 0.875rem; color: rgba(255,255,255,0.3); margin-bottom: 2rem; }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #c73058, #7c3aed);
+            color: white;
+            text-decoration: none;
+            border-radius: 0.75rem;
+            font-weight: 700;
+            font-size: 0.875rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 0 20px rgba(199,48,88,0.25);
+        }
+        .btn:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 0 30px rgba(199,48,88,0.45); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="baku">
+            <svg viewBox="0 0 120 95" fill="none" width="100%" height="100%">
+                <g>
+                    <text x="85" y="18" font-size="16" fill="white" font-family="sans-serif" font-weight="bold">?
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/>
+                    </text>
+                    <text x="98" y="10" font-size="12" fill="white" font-family="sans-serif" font-weight="bold">?
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+                    </text>
+                </g>
+                <ellipse cx="58" cy="60" rx="38" ry="25" fill="#F07020"/>
+                <ellipse cx="58" cy="60" rx="38" ry="25" stroke="white" stroke-width="2.5" fill="none"/>
+                <ellipse cx="58" cy="65" rx="22" ry="13" fill="white"/>
+                <ellipse cx="40" cy="78" rx="9" ry="4.5" fill="#F07020" stroke="white" stroke-width="1.5"/>
+                <ellipse cx="72" cy="78" rx="9" ry="4.5" fill="#F07020" stroke="white" stroke-width="1.5"/>
+                <ellipse cx="35" cy="42" rx="25" ry="22" fill="#F07020"/>
+                <ellipse cx="35" cy="42" rx="25" ry="22" stroke="white" stroke-width="2.5" fill="none"/>
+                <ellipse cx="18" cy="24" rx="6" ry="9" fill="#F07020" transform="rotate(-25 18 24)"/>
+                <ellipse cx="18" cy="24" rx="6" ry="9" stroke="white" stroke-width="2" fill="none" transform="rotate(-25 18 24)"/>
+                <ellipse cx="50" cy="24" rx="6" ry="9" fill="#F07020" transform="rotate(10 50 24)"/>
+                <ellipse cx="50" cy="24" rx="6" ry="9" stroke="white" stroke-width="2" fill="none" transform="rotate(10 50 24)"/>
+                <path d="M46 45 Q56 43 58 48 Q57 53 50 51 Z" fill="#D86018"/>
+                <path d="M46 45 Q56 43 58 48 Q57 53 50 51 Z" stroke="white" stroke-width="1.8" fill="none"/>
+                <!-- Open eyes (surprised) -->
+                <circle cx="26" cy="40" r="3.5" fill="white"/>
+                <circle cx="26" cy="40" r="2" fill="#2a0810"/>
+                <circle cx="42" cy="38" r="3.5" fill="white"/>
+                <circle cx="42" cy="38" r="2" fill="#2a0810"/>
+                <circle cx="22" cy="48" r="4" fill="#F0AAAA" opacity="0.4"/>
+            </svg>
+        </div>
+        <div class="error-code">404</div>
+        <p class="message">ページが見つかりません</p>
+        <p class="sub">お探しのページは宇宙の彼方へ消えてしまったようです</p>
+        <a href="/" class="btn">ホームに戻る</a>
     </div>
-    <h1 class="font-display text-5xl font-bold mb-3 text-cosmic-800 dark:text-white text-glow">404</h1>
-    <p class="text-cosmic-600/60 dark:text-white/50 mb-8 font-display text-lg">お探しのページが見つかりません</p>
-    <a href="{% url 'dashboard:home' %}" class="inline-block bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-8 py-3 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300 hover:scale-105">ホームに戻る</a>
-</div>
-{% endblock %}
+</body>
+</html>

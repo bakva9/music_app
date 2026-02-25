@@ -1,5 +1,5 @@
 from django import forms
-from .models import PracticeSong, PracticeSession
+from .models import PracticeSong, PracticeSession, PracticeGoal
 
 
 class PracticeSongForm(forms.ModelForm):
@@ -10,6 +10,19 @@ class PracticeSongForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'class': 'w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2'}),
             'artist': forms.TextInput(attrs={'class': 'w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2'}),
             'target_bpm': forms.NumberInput(attrs={'class': 'w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2'}),
+        }
+
+
+class PracticeGoalForm(forms.ModelForm):
+    class Meta:
+        model = PracticeGoal
+        fields = ['weekly_minutes']
+        widgets = {
+            'weekly_minutes': forms.NumberInput(attrs={
+                'class': 'w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2',
+                'min': '10',
+                'step': '10',
+            }),
         }
 
 

@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}ライブ統計 - 残音{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow">ライブ統計</h1>
+        <a href="{% url 'livelog:event_list' %}" class="text-sm text-cosmic-500 dark:text-cosmic-300 hover:text-cosmic-400 transition-colors">&larr; ライブ一覧</a>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 text-center">
+            <div class="text-2xl sm:text-3xl font-mono font-bold text-cosmic-500 dark:text-cosmic-300 text-glow">{{ total_events }}</div>
+            <div class="text-xs text-cosmic-600/60 dark:text-white/50 mt-1">参戦回数</div>
+        </div>
+        <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 text-center">
+            <div class="text-2xl sm:text-3xl font-mono font-bold text-cosmic-500 dark:text-cosmic-300 text-glow">{{ total_artists }}</div>
+            <div class="text-xs text-cosmic-600/60 dark:text-white/50 mt-1">アーティスト数</div>
+        </div>
+        <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 text-center">
+            <div class="text-2xl sm:text-3xl font-mono font-bold text-cosmic-500 dark:text-cosmic-300 text-glow">{{ total_venues }}</div>
+            <div class="text-xs text-cosmic-600/60 dark:text-white/50 mt-1">会場数</div>
+        </div>
+    </div>
+
+    <!-- Artist Ranking -->
+    {% if artist_ranking %}
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 mb-6">
+        <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-4">アーティスト別ランキング</h2>
+        <div class="space-y-2">
+            {% for item in artist_ranking %}
+            <div class="flex items-center gap-3">
+                <span class="w-6 text-center text-sm font-mono font-bold {% if forloop.counter <= 3 %}text-stardust{% else %}text-cosmic-600/60 dark:text-white/50{% endif %}">{{ forloop.counter }}</span>
+                <div class="flex-1">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-sm font-medium">{{ item.artist }}</span>
+                        <span class="text-xs text-cosmic-600/60 dark:text-white/50">{{ item.count }}回</span>
+                    </div>
+                    <div class="w-full bg-cosmic-100/50 dark:bg-white/10 rounded-full h-1.5">
+                        <div class="h-full rounded-full bg-gradient-to-r from-cosmic-500 to-nebula-500"
+                             style="width: {% widthratio item.count artist_ranking.0.count 100 %}%"></div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Monthly Counts -->
+    {% if monthly_counts %}
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 mb-6">
+        <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-4">月別参戦数</h2>
+        <div class="space-y-2">
+            {% for item in monthly_counts %}
+            <div class="flex items-center gap-3">
+                <span class="w-16 text-xs font-mono text-cosmic-600/60 dark:text-white/50">{{ item.month|date:"Y/m" }}</span>
+                <div class="flex-1 flex items-center gap-2">
+                    <div class="flex-1 bg-cosmic-100/50 dark:bg-white/10 rounded-full h-2">
+                        <div class="h-full rounded-full bg-gradient-to-r from-nebula-500 to-supernova"
+                             style="width: {% widthratio item.count monthly_counts.0.count 100 %}%"></div>
+                    </div>
+                    <span class="text-xs font-mono text-cosmic-600/60 dark:text-white/50 w-6 text-right">{{ item.count }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Venue Ranking -->
+    {% if venue_ranking %}
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 mb-6">
+        <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-4">会場別ランキング</h2>
+        <div class="space-y-2">
+            {% for item in venue_ranking %}
+            <div class="flex justify-between items-center py-1">
+                <span class="text-sm">{{ item.venue }}</span>
+                <span class="text-xs font-mono text-cosmic-600/60 dark:text-white/50">{{ item.count }}回</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if not artist_ranking and not monthly_counts %}
+    <div class="text-center py-12 text-cosmic-600/50 dark:text-white/40">
+        ライブ記録がまだありません
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

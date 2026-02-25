@@ -22,7 +22,7 @@ def event_list(request):
 @login_required
 def event_create(request):
     if request.method == 'POST':
-        form = LiveEventForm(request.POST)
+        form = LiveEventForm(request.POST, request.FILES)
         if form.is_valid():
             event = form.save(commit=False)
             event.user = request.user
@@ -37,9 +37,12 @@ def event_create(request):
 def event_edit(request, pk):
     event = get_object_or_404(LiveEvent, pk=pk, user=request.user)
     if request.method == 'POST':
-        form = LiveEventForm(request.POST, instance=event)
+        form = LiveEventForm(request.POST, request.FILES, instance=event)
         if form.is_valid():
-            form.save()
+            ev = form.save(commit=False)
+            if request.POST.get('thumbnail-clear'):
+                ev.thumbnail = ''
+            ev.save()
             return redirect('livelog:event_detail', pk=event.pk)
     else:
         form = LiveEventForm(instance=event)
@@ -145,6 +148,48 @@ def impression_edit(request, pk):
     else:
         form = ImpressionForm(instance=impression)
     return render(request, 'livelog/impression_form.html', {'form': form, 'event': event})
+
+
+@login_required
+def live_stats(request):
+    from django.db.models import Count
+    events = LiveEvent.objects.filter(user=request.user, date__lt=timezone.now().date())
+
+    # アーティスト別ランキング
+    artist_ranking = (
+        events.values('artist')
+        .annotate(count=Count('id'))
+        .order_by('-count')[:10]
+    )
+
+    # 月別参戦数
+    monthly_counts = (
+        events.annotate(month=TruncMonth('date'))
+        .values('month')
+        .annotate(count=Count('id'))
+        .order_by('-month')[:12]
+    )
+
+    # 会場別集計
+    venue_ranking = (
+        events.exclude(venue='')
+        .values('venue')
+        .annotate(count=Count('id'))
+        .order_by('-count')[:10]
+    )
+
+    total_events = events.count()
+    total_artists = events.values('artist').distinct().count()
+    total_venues = events.exclude(venue='').values('venue').distinct().count()
+
+    return render(request, 'livelog/live_stats.html', {
+        'artist_ranking': artist_ranking,
+        'monthly_counts': monthly_counts,
+        'venue_ranking': venue_ranking,
+        'total_events': total_events,
+        'total_artists': total_artists,
+        'total_venues': total_venues,
+    })
 
 
 @login_required

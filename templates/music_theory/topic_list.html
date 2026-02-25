@@ -13,38 +13,44 @@
     {% include "music_theory/_section_nav.html" with active_section="dictionary" %}
 </div>
 
-<!-- Category Tabs -->
-<div class="flex flex-wrap gap-2 mb-4">
-    <a href="{% url 'music_theory:topic_list' %}"
-       class="px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200
-              {% if not current_category %}bg-cosmic-500/20 text-cosmic-300 border border-cosmic-400/30{% else %}text-white/50 hover:text-white/80 hover:bg-white/5 border border-white/10{% endif %}"
-       hx-get="{% url 'music_theory:topic_list' %}"
-       hx-target="#topic-results"
-       hx-swap="innerHTML"
-       hx-push-url="true">すべて</a>
-    {% for value, label in categories %}
-    <a href="{% url 'music_theory:topic_list' %}?category={{ value }}"
-       class="px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200
-              {% if current_category == value %}bg-cosmic-500/20 text-cosmic-300 border border-cosmic-400/30{% else %}text-white/50 hover:text-white/80 hover:bg-white/5 border border-white/10{% endif %}"
-       hx-get="{% url 'music_theory:topic_list' %}?category={{ value }}"
-       hx-target="#topic-results"
-       hx-swap="innerHTML"
-       hx-push-url="true">{{ label }}</a>
-    {% endfor %}
-</div>
-
-<!-- Search -->
-<div class="mb-6">
-    <input type="text"
-           name="q"
-           value="{{ query }}"
-           placeholder="トピック名・キーワードで検索..."
-           class="w-full rounded-2xl border border-cosmic-200/30 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur-md px-4 py-3 focus:ring-2 focus:ring-cosmic-400/50 focus:border-cosmic-400/50"
-           hx-get="{% url 'music_theory:topic_list' %}{% if current_category %}?category={{ current_category }}{% endif %}"
-           hx-trigger="input changed delay:300ms"
+<div x-data="{ activeCategory: '{{ current_category }}' }">
+    <!-- Category Tabs -->
+    <div class="flex flex-wrap gap-2 mb-4">
+        <a href="{% url 'music_theory:topic_list' %}"
+           @click.prevent="activeCategory = ''; $el.dispatchEvent(new Event('click-htmx'))"
+           :class="activeCategory === '' ? 'bg-cosmic-500/20 text-cosmic-300 border border-cosmic-400/30' : 'text-white/50 hover:text-white/80 hover:bg-white/5 border border-white/10'"
+           class="px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200"
+           hx-get="{% url 'music_theory:topic_list' %}"
            hx-target="#topic-results"
-           hx-include="[name='q']"
-           hx-swap="innerHTML">
+           hx-swap="innerHTML"
+           hx-push-url="true"
+           hx-trigger="click-htmx">すべて</a>
+        {% for value, label in categories %}
+        <a href="{% url 'music_theory:topic_list' %}?category={{ value }}"
+           @click.prevent="activeCategory = '{{ value }}'; $el.dispatchEvent(new Event('click-htmx'))"
+           :class="activeCategory === '{{ value }}' ? 'bg-cosmic-500/20 text-cosmic-300 border border-cosmic-400/30' : 'text-white/50 hover:text-white/80 hover:bg-white/5 border border-white/10'"
+           class="px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200"
+           hx-get="{% url 'music_theory:topic_list' %}?category={{ value }}"
+           hx-target="#topic-results"
+           hx-swap="innerHTML"
+           hx-push-url="true"
+           hx-trigger="click-htmx">{{ label }}</a>
+        {% endfor %}
+    </div>
+
+    <!-- Search -->
+    <div class="mb-6">
+        <input type="text"
+               name="q"
+               value="{{ query }}"
+               placeholder="トピック名・キーワードで検索..."
+               class="w-full rounded-2xl border border-cosmic-200/30 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur-md px-4 py-3 focus:ring-2 focus:ring-cosmic-400/50 focus:border-cosmic-400/50"
+               hx-get="{% url 'music_theory:topic_list' %}"
+               hx-trigger="input changed delay:300ms"
+               hx-target="#topic-results"
+               hx-include="[name='q']"
+               hx-swap="innerHTML">
+    </div>
 </div>
 
 <div id="topic-results">

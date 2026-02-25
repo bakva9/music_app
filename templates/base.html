@@ -1,9 +1,15 @@
-<!DOCTYPE html>
+{% load static %}<!DOCTYPE html>
 <html lang="ja" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}残音{% endblock %}</title>
+    <!-- PWA -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <meta name="theme-color" content="#c73058">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="{% static 'icons/icon-192.png' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -261,6 +267,23 @@
         .text-glow { text-shadow: 0 0 20px rgba(199,48,88,0.3), 0 0 40px rgba(199,48,88,0.1); }
         .text-glow-teal { text-shadow: 0 0 20px rgba(240,112,32,0.3); }
 
+        /* === Brand Title Treatment === */
+        .brand-title {
+            background: linear-gradient(135deg, #e06888 0%, #fb923c 40%, #ffd700 100%);
+            background-size: 200% 200%;
+            background-position: 0% 50%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            transition: background-position 0.6s ease;
+        }
+        .group:hover .brand-title {
+            background-position: 100% 50%;
+        }
+        .brand-title-glow {
+            filter: drop-shadow(0 0 8px rgba(240,112,32,0.2)) drop-shadow(0 0 20px rgba(199,48,88,0.12));
+        }
+
         /* === Glassmorphism Fallback === */
         @supports not (backdrop-filter: blur(12px)) {
             .glass-card { background: rgba(74, 14, 30, 0.85) !important; }
@@ -320,7 +343,7 @@
         <footer class="bg-white/5 dark:bg-white/5 backdrop-blur-md border-t border-white/10 py-4 mt-auto">
             <div class="max-w-7xl mx-auto px-4 text-center text-sm text-gray-400 dark:text-gray-500 flex items-center justify-center gap-2">
                 {% include "partials/baku/_baku_icon.html" %}
-                <span>&copy; 2025 残音</span>
+                <span>&copy; 2025 <span class="brand-title">残音</span></span>
             </div>
         </footer>
     </div>
@@ -579,5 +602,13 @@
     </script>
 
     {% block extra_js %}{% endblock %}
+
+    <!-- Service Worker Registration -->
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .catch(() => {});
+    }
+    </script>
 </body>
 </html>

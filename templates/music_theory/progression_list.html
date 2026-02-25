@@ -12,11 +12,19 @@
     <!-- Key Selector -->
     <div class="mb-4">
         <div class="text-sm text-white/50 mb-2">キーを選択</div>
-        <div class="flex flex-wrap gap-1.5">
-            <template x-for="(label, i) in keyLabels" :key="i">
-                <button @click="selectedKey = i"
-                        :class="selectedKey === i ? 'bg-cosmic-500/30 text-cosmic-300 border-cosmic-400/30' : 'text-white/50 hover:text-white/80 hover:bg-white/5 border-white/10'"
+        <div class="flex flex-wrap gap-1.5 mb-2">
+            <template x-for="(label, i) in majorKeyLabels" :key="'maj'+i">
+                <button @click="selectedKey = i; isMinor = false"
+                        :class="selectedKey === i && !isMinor ? 'bg-cosmic-500/30 text-cosmic-300 border-cosmic-400/30' : 'text-white/50 hover:text-white/80 hover:bg-white/5 border-white/10'"
                         class="w-10 h-10 rounded-lg text-sm font-mono font-medium border transition-all duration-200"
+                        x-text="label"></button>
+            </template>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+            <template x-for="(label, i) in minorKeyLabels" :key="'min'+i">
+                <button @click="selectedKey = i; isMinor = true"
+                        :class="selectedKey === i && isMinor ? 'bg-nebula-500/30 text-nebula-300 border-nebula-400/30' : 'text-white/50 hover:text-white/80 hover:bg-white/5 border-white/10'"
+                        class="w-10 h-10 rounded-lg text-xs font-mono font-medium border transition-all duration-200"
                         x-text="label"></button>
             </template>
         </div>
@@ -54,6 +62,7 @@
 function progressionExplorer() {
     return {
         selectedKey: 0,
+        isMinor: false,
         playing: false,
         playingSlug: '',
         playingIndex: -1,
@@ -61,7 +70,8 @@ function progressionExplorer() {
         _audioCtx: null,
 
         notesSharp: ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'],
-        keyLabels: ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'],
+        majorKeyLabels: ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'],
+        minorKeyLabels: ['Cm','D♭m','Dm','E♭m','Em','Fm','G♭m','Gm','A♭m','Am','B♭m','Bm'],
 
         normalizeRoot(root) {
             const map = {'Db':'C#','D♭':'C#','Eb':'D#','E♭':'D#','Gb':'F#','G♭':'F#','Ab':'G#','A♭':'G#','Bb':'A#','B♭':'A#','Cb':'B','C♭':'B','Fb':'E','F♭':'E'};
@@ -96,11 +106,11 @@ function progressionExplorer() {
                 const bassIdx = this.notesSharp.indexOf(bassNorm);
                 if (bassIdx !== -1) {
                     const newBassIdx = (bassIdx + semitones + 12) % 12;
-                    quality = slashMatch[1] + '/' + this.keyLabels[newBassIdx];
+                    quality = slashMatch[1] + '/' + this.majorKeyLabels[newBassIdx];
                 }
             }
 
-            return this.keyLabels[newIdx] + quality;
+            return this.majorKeyLabels[newIdx] + quality;
         },
 
         // --- Web Audio API ---

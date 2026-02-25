@@ -12,11 +12,19 @@
     <!-- Key Selector -->
     <div class="mb-6">
         <div class="text-sm text-white/50 mb-2">キーを選択</div>
-        <div class="flex flex-wrap gap-1.5">
-            <template x-for="(label, i) in keyLabels" :key="i">
-                <button @click="selectedKey = i"
-                        :class="selectedKey === i ? 'bg-cosmic-500/30 text-cosmic-300 border-cosmic-400/30' : 'text-white/50 hover:text-white/80 hover:bg-white/5 border-white/10'"
+        <div class="flex flex-wrap gap-1.5 mb-2">
+            <template x-for="(label, i) in majorKeyLabels" :key="'maj'+i">
+                <button @click="selectedKey = i; isMinor = false"
+                        :class="selectedKey === i && !isMinor ? 'bg-cosmic-500/30 text-cosmic-300 border-cosmic-400/30' : 'text-white/50 hover:text-white/80 hover:bg-white/5 border-white/10'"
                         class="w-10 h-10 rounded-lg text-sm font-mono font-medium border transition-all duration-200"
+                        x-text="label"></button>
+            </template>
+        </div>
+        <div class="flex flex-wrap gap-1.5">
+            <template x-for="(label, i) in minorKeyLabels" :key="'min'+i">
+                <button @click="selectedKey = i; isMinor = true"
+                        :class="selectedKey === i && isMinor ? 'bg-nebula-500/30 text-nebula-300 border-nebula-400/30' : 'text-white/50 hover:text-white/80 hover:bg-white/5 border-white/10'"
+                        class="w-10 h-10 rounded-lg text-xs font-mono font-medium border transition-all duration-200"
                         x-text="label"></button>
             </template>
         </div>
@@ -26,7 +34,7 @@
     <div class="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden mb-6">
         <div class="px-4 py-3 border-b border-white/10">
             <h2 class="font-display font-bold text-white/90">ダイアトニックコード</h2>
-            <p class="text-xs text-white/40 mt-0.5"><span x-text="keyLabels[selectedKey]">C</span> メジャーキー</p>
+            <p class="text-xs text-white/40 mt-0.5"><span x-text="currentKeyLabel()">C</span> <span x-text="isMinor ? 'マイナーキー' : 'メジャーキー'"></span></p>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
@@ -127,17 +135,40 @@
 function diatonicApp() {
     return {
         selectedKey: 0,
-        keyLabels: ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'],
-        scaleIntervals: [0, 2, 4, 5, 7, 9, 11],
-        triadQualities: ['', 'm', 'm', '', '', 'm', 'dim'],
-        seventhQualities: ['M7', 'm7', 'm7', 'M7', '7', 'm7', 'm7(♭5)'],
-        degreeNames: ['I', 'IIm', 'IIIm', 'IV', 'V', 'VIm', 'VIIdim'],
-        functions: ['T', 'SD', 'T', 'SD', 'D', 'T', 'D'],
-        functionLabels: ['T (トニック)', 'SD (サブドミナント)', 'T (トニック代理)', 'SD (サブドミナント)', 'D (ドミナント)', 'T (トニック代理)', 'D (ドミナント代理)'],
+        isMinor: false,
+        majorKeyLabels: ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'],
+        minorKeyLabels: ['Cm','D♭m','Dm','E♭m','Em','Fm','G♭m','Gm','A♭m','Am','B♭m','Bm'],
+
+        // Major scale
+        majorScaleIntervals: [0, 2, 4, 5, 7, 9, 11],
+        majorTriadQualities: ['', 'm', 'm', '', '', 'm', 'dim'],
+        majorSeventhQualities: ['M7', 'm7', 'm7', 'M7', '7', 'm7', 'm7(♭5)'],
+        majorDegreeNames: ['I', 'IIm', 'IIIm', 'IV', 'V', 'VIm', 'VIIdim'],
+        majorFunctions: ['T', 'SD', 'T', 'SD', 'D', 'T', 'D'],
+        majorFunctionLabels: ['T (トニック)', 'SD (サブドミナント)', 'T (トニック代理)', 'SD (サブドミナント)', 'D (ドミナント)', 'T (トニック代理)', 'D (ドミナント代理)'],
+
+        // Natural minor scale
+        minorScaleIntervals: [0, 2, 3, 5, 7, 8, 10],
+        minorTriadQualities: ['m', 'dim', '', 'm', 'm', '', ''],
+        minorSeventhQualities: ['m7', 'm7(♭5)', 'M7', 'm7', 'm7', 'M7', '7'],
+        minorDegreeNames: ['Im', 'IIdim', '♭III', 'IVm', 'Vm', '♭VI', '♭VII'],
+        minorFunctions: ['T', 'SD', 'T', 'SD', 'D', 'SD', 'D'],
+        minorFunctionLabels: ['T (トニック)', 'SD (サブドミナント)', 'T (トニック代理)', 'SD (サブドミナント)', 'D (ドミナント)', 'SD (サブドミナント代理)', 'D (ドミナント代理)'],
+
+        currentKeyLabel() {
+            return this.isMinor ? this.minorKeyLabels[this.selectedKey] : this.majorKeyLabels[this.selectedKey];
+        },
 
         getNoteName(semitone) {
-            return this.keyLabels[(this.selectedKey + semitone) % 12];
+            return this.majorKeyLabels[(this.selectedKey + semitone) % 12];
         },
+
+        get scaleIntervals() { return this.isMinor ? this.minorScaleIntervals : this.majorScaleIntervals; },
+        get triadQualities() { return this.isMinor ? this.minorTriadQualities : this.majorTriadQualities; },
+        get seventhQualities() { return this.isMinor ? this.minorSeventhQualities : this.majorSeventhQualities; },
+        get degreeNames() { return this.isMinor ? this.minorDegreeNames : this.majorDegreeNames; },
+        get functions() { return this.isMinor ? this.minorFunctions : this.majorFunctions; },
+        get functionLabels() { return this.isMinor ? this.minorFunctionLabels : this.majorFunctionLabels; },
 
         getDiatonicChords() {
             return this.scaleIntervals.map((interval, i) => ({
@@ -150,6 +181,35 @@ function diatonicApp() {
         },
 
         getSubstituteChords() {
+            if (this.isMinor) {
+                return [
+                    {
+                        func: 'T (トニック)',
+                        color: 'cosmic',
+                        chords: [
+                            this.getNoteName(this.scaleIntervals[0]) + 'm',
+                            this.getNoteName(this.scaleIntervals[2]),
+                        ]
+                    },
+                    {
+                        func: 'SD (サブドミナント)',
+                        color: 'nebula',
+                        chords: [
+                            this.getNoteName(this.scaleIntervals[1]) + 'dim',
+                            this.getNoteName(this.scaleIntervals[3]) + 'm',
+                            this.getNoteName(this.scaleIntervals[5]),
+                        ]
+                    },
+                    {
+                        func: 'D (ドミナント)',
+                        color: 'blue',
+                        chords: [
+                            this.getNoteName(this.scaleIntervals[4]) + 'm',
+                            this.getNoteName(this.scaleIntervals[6]),
+                        ]
+                    },
+                ];
+            }
             return [
                 {
                     func: 'T (トニック)',
@@ -186,7 +246,7 @@ function diatonicApp() {
                 const domSemitone = (targetSemitone + 7) % 12;
                 return {
                     label: 'V/' + this.degreeNames[t],
-                    chord: this.keyLabels[(this.selectedKey + domSemitone) % 12] + '7',
+                    chord: this.majorKeyLabels[(this.selectedKey + domSemitone) % 12] + '7',
                     target: this.getNoteName(targetSemitone) + this.triadQualities[t],
                 };
             });

@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>残音 | Nokorine</title>
     <meta name="description" content="残音 - 演奏・練習・ライブ・作曲、すべてをひとつに。音楽体験を記録する統合アプリ。">
+    <!-- PWA -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <meta name="theme-color" content="#c73058">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="{% static 'icons/icon-192.png' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -262,6 +268,19 @@
         /* Phase 6: Scroll indicator (3.5s) */
         .hero-scroll { opacity: 0; animation: fade-in-up 1s ease-out 3.5s forwards; }
 
+        /* === Brand Title Treatment === */
+        .brand-title {
+            background: linear-gradient(135deg, #e06888 0%, #fb923c 40%, #ffd700 100%);
+            background-size: 200% 200%;
+            background-position: 0% 50%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .brand-title-glow {
+            filter: drop-shadow(0 0 8px rgba(240,112,32,0.2)) drop-shadow(0 0 20px rgba(199,48,88,0.12));
+        }
+
         /* === CTA Button shimmer effect === */
         .btn-shimmer {
             position: relative;
@@ -403,7 +422,7 @@
     <section class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
         <!-- Orbiting particles -->
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
-            <div class="relative w-80 h-80">
+            <div class="relative w-48 sm:w-64 lg:w-80 h-48 sm:h-64 lg:h-80">
                 <div class="orbit-particle orbit-1"></div>
                 <div class="orbit-particle orbit-2"></div>
                 <div class="orbit-particle orbit-3"></div>
@@ -423,7 +442,7 @@
                 <!-- Glow wrapper -->
                 <div class="hero-logo-glow relative">
                     <img src="{% static 'images/logo.png' %}" alt="残音"
-                         class="w-40 h-40 md:w-52 md:h-52 rounded-full shadow-2xl relative z-10">
+                         class="w-32 sm:w-40 md:w-52 h-32 sm:h-40 md:h-52 rounded-full shadow-2xl relative z-10">
                     <!-- SVG accent ring behind logo -->
                     <div class="absolute inset-0 -m-4 z-0" aria-hidden="true">
                         {% include "partials/_logo_svg.html" with class="w-full h-full opacity-30" id="hero-ring" %}
@@ -433,7 +452,7 @@
         </div>
 
         <!-- Title: 残音 (character-by-character reveal) -->
-        <h1 class="font-display text-7xl md:text-8xl lg:text-9xl font-bold text-center mb-2 leading-tight title-glow">
+        <h1 class="font-display text-7xl md:text-8xl lg:text-9xl font-bold text-center mb-2 leading-tight title-glow tracking-[0.08em]">
             <span class="hero-char-wrap hero-char-wrap-1"><span class="text-gradient-warm">残</span></span><span class="hero-char-wrap hero-char-wrap-2"><span class="text-gradient-warm">音</span></span>
         </h1>
 
@@ -496,9 +515,12 @@
             <div class="reveal-card feature-card group bg-white/[0.03] backdrop-blur-md rounded-2xl p-6 border border-white/10
                         hover:border-cosmic-400/30 hover:shadow-[0_8px_40px_rgba(199,48,88,0.15)]"
                  style="transition-delay: 0ms;">
-                <div class="feature-icon w-14 h-14 rounded-xl bg-gradient-to-br from-cosmic-500/20 to-cosmic-700/10 flex items-center justify-center mb-4
+                <div class="feature-icon w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-cosmic-500/20 to-cosmic-700/10 flex items-center justify-center mb-4
                             group-hover:from-cosmic-500/30 group-hover:to-cosmic-600/20">
-                    <span class="text-3xl">🎵</span>
+                    <svg class="w-7 h-7 text-cosmic-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 19V6l12-3v13"/>
+                        <circle cx="6" cy="19" r="3"/><circle cx="18" cy="16" r="3"/>
+                    </svg>
                 </div>
                 <h3 class="font-display font-bold text-lg mb-2 text-white/90 group-hover:text-cosmic-300 transition-colors duration-200">コード譜</h3>
                 <p class="text-sm text-white/50 leading-relaxed">J-POPのコード譜を検索・表示。カポ変換や自動スクロールで演奏をサポート。</p>
@@ -508,9 +530,11 @@
             <div class="reveal-card feature-card group bg-white/[0.03] backdrop-blur-md rounded-2xl p-6 border border-white/10
                         hover:border-nebula-400/30 hover:shadow-[0_8px_40px_rgba(240,112,32,0.15)]"
                  style="transition-delay: 100ms;">
-                <div class="feature-icon w-14 h-14 rounded-xl bg-gradient-to-br from-nebula-500/20 to-nebula-700/10 flex items-center justify-center mb-4
+                <div class="feature-icon w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-nebula-500/20 to-nebula-700/10 flex items-center justify-center mb-4
                             group-hover:from-nebula-500/30 group-hover:to-nebula-600/20">
-                    <span class="text-3xl">🎸</span>
+                    <svg class="w-7 h-7 text-nebula-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                    </svg>
                 </div>
                 <h3 class="font-display font-bold text-lg mb-2 text-white/90 group-hover:text-nebula-300 transition-colors duration-200">練習記録</h3>
                 <p class="text-sm text-white/50 leading-relaxed">ギター練習の時間を記録。ストリークで継続をモチベーションに。</p>
@@ -520,9 +544,11 @@
             <div class="reveal-card feature-card group bg-white/[0.03] backdrop-blur-md rounded-2xl p-6 border border-white/10
                         hover:border-orange-400/30 hover:shadow-[0_8px_40px_rgba(255,159,67,0.15)]"
                  style="transition-delay: 200ms;">
-                <div class="feature-icon w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500/20 to-orange-700/10 flex items-center justify-center mb-4
+                <div class="feature-icon w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-orange-500/20 to-orange-700/10 flex items-center justify-center mb-4
                             group-hover:from-orange-500/30 group-hover:to-orange-600/20">
-                    <span class="text-3xl">🎤</span>
+                    <svg class="w-7 h-7 text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 2H9a2 2 0 0 0-2 2v6a5 5 0 0 0 10 0V4a2 2 0 0 0-2-2Z"/><path d="M12 15v4"/><path d="M8 19h8"/>
+                    </svg>
                 </div>
                 <h3 class="font-display font-bold text-lg mb-2 text-white/90 group-hover:text-orange-300 transition-colors duration-200">ライブ記録</h3>
                 <p class="text-sm text-white/50 leading-relaxed">ライブの思い出を記録。セトリ・感想・費用をまとめて管理。</p>
@@ -532,9 +558,11 @@
             <div class="reveal-card feature-card group bg-white/[0.03] backdrop-blur-md rounded-2xl p-6 border border-white/10
                         hover:border-green-400/30 hover:shadow-[0_8px_40px_rgba(0,255,136,0.1)]"
                  style="transition-delay: 300ms;">
-                <div class="feature-icon w-14 h-14 rounded-xl bg-gradient-to-br from-green-500/20 to-green-700/10 flex items-center justify-center mb-4
+                <div class="feature-icon w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br from-green-500/20 to-green-700/10 flex items-center justify-center mb-4
                             group-hover:from-green-500/30 group-hover:to-green-600/20">
-                    <span class="text-3xl">🎹</span>
+                    <svg class="w-7 h-7 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
                 </div>
                 <h3 class="font-display font-bold text-lg mb-2 text-white/90 group-hover:text-green-300 transition-colors duration-200">作曲管理</h3>
                 <p class="text-sm text-white/50 leading-relaxed">作曲プロジェクトの進捗を管理。テキスト・音声・写真メモで記録。</p>
@@ -549,17 +577,17 @@
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="reveal-card text-center" style="transition-delay: 0ms;">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl font-mono font-bold text-gradient-warm" style="background: linear-gradient(135deg, #f2a0b4 0%, #fb923c 50%, #ffd700 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">1</div>
+                <div class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl sm:text-3xl font-mono font-bold text-gradient-warm" style="background: linear-gradient(135deg, #f2a0b4 0%, #fb923c 50%, #ffd700 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">1</div>
                 <h3 class="font-display font-bold text-lg mb-2 text-white/80">アカウント作成</h3>
                 <p class="text-sm text-white/40">メールアドレスだけで無料登録</p>
             </div>
             <div class="reveal-card text-center" style="transition-delay: 150ms;">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl font-mono font-bold" style="background: linear-gradient(135deg, #f2a0b4 0%, #fb923c 50%, #ffd700 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">2</div>
+                <div class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl sm:text-3xl font-mono font-bold" style="background: linear-gradient(135deg, #f2a0b4 0%, #fb923c 50%, #ffd700 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">2</div>
                 <h3 class="font-display font-bold text-lg mb-2 text-white/80">機能を選ぶ</h3>
                 <p class="text-sm text-white/40">4つの機能から好きなものを使おう</p>
             </div>
             <div class="reveal-card text-center" style="transition-delay: 300ms;">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl font-mono font-bold" style="background: linear-gradient(135deg, #f2a0b4 0%, #fb923c 50%, #ffd700 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">3</div>
+                <div class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl sm:text-3xl font-mono font-bold" style="background: linear-gradient(135deg, #f2a0b4 0%, #fb923c 50%, #ffd700 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">3</div>
                 <h3 class="font-display font-bold text-lg mb-2 text-white/80">音楽を記録</h3>
                 <p class="text-sm text-white/40">あなたの音楽体験を積み重ねよう</p>
             </div>
@@ -592,7 +620,7 @@
     <footer class="relative z-10 py-6 border-t border-white/5">
         <div class="text-center text-sm text-white/30 flex items-center justify-center gap-2">
             <img src="{% static 'images/logo.png' %}" alt="残音" class="w-4 h-4 rounded-full inline-block">
-            <span>&copy; 2025 残音</span>
+            <span>&copy; 2025 <span class="brand-title">残音</span></span>
         </div>
     </footer>
 
@@ -615,6 +643,11 @@
                 observer.observe(card);
             });
         });
+    </script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
     </script>
 </body>
 </html>

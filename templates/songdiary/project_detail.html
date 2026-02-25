@@ -29,7 +29,8 @@
             <p class="text-sm text-cosmic-600/60 dark:text-white/50 mt-2">{{ project.description }}</p>
             {% endif %}
         </div>
-        <div class="flex gap-2">
+        <div class="flex items-center gap-2">
+            {% include "partials/_share_button.html" with share_title=project.title share_text=project.description %}
             <a href="{% url 'songdiary:project_edit' project.pk %}" class="text-sm text-cosmic-500 dark:text-cosmic-300 hover:text-cosmic-400 dark:hover:text-cosmic-200 transition-colors">編集</a>
             <a href="{% url 'songdiary:project_delete' project.pk %}" class="text-sm text-comet dark:text-comet/80 hover:underline">削除</a>
         </div>
@@ -47,7 +48,7 @@
                 <button type="submit" class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-4 py-2 rounded-xl text-sm font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300">追加</button>
             </form>
 
-            <div class="flex gap-2">
+            <div class="flex flex-col sm:flex-row gap-2">
                 <!-- Photo Upload -->
                 <form hx-post="{% url 'songdiary:add_photo_memo' project.pk %}" hx-target="#timeline" hx-swap="innerHTML"
                       hx-encoding="multipart/form-data" class="flex-1">
@@ -73,7 +74,18 @@
     </div>
 
     <!-- Timeline -->
-    <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-3">タイムライン</h2>
+    <div class="flex justify-between items-center mb-3" x-data="{ filter: 'all' }">
+        <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90">タイムライン</h2>
+        <div class="flex gap-1">
+            <template x-for="f in [{key:'all',label:'すべて'},{key:'text',label:'📝'},{key:'audio',label:'🎤'},{key:'photo',label:'📷'}]">
+                <button @click="filter = f.key; document.querySelectorAll('#timeline [data-memo-type]').forEach(el => { el.style.display = (f.key === 'all' || el.dataset.memoType === f.key) ? '' : 'none'; })"
+                        :class="filter === f.key ? 'bg-cosmic-500/20 dark:bg-cosmic-400/20 text-cosmic-700 dark:text-cosmic-200' : 'text-cosmic-600/60 dark:text-white/50 hover:bg-cosmic-100/50 dark:hover:bg-white/10'"
+                        class="px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200"
+                        x-text="f.label">
+                </button>
+            </template>
+        </div>
+    </div>
     <div id="timeline">
         {% include "songdiary/_timeline.html" %}
     </div>

@@ -69,3 +69,24 @@ class SessionSong(models.Model):
 
     def __str__(self):
         return f'{self.practice_song.title} - {self.duration_minutes}分'
+
+
+class PracticeGoal(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='practice_goal')
+    weekly_minutes = models.PositiveIntegerField('週間目標（分）', default=120)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.user} - 週{self.weekly_minutes}分'
+
+    def get_progress(self):
+        """今週（月曜始まり）の練習時間と進捗率を返す"""
+        today = timezone.now().date()
+        monday = today - timedelta(days=today.weekday())
+        total = PracticeSession.objects.filter(
+            user=self.user,
+            started_at__date__gte=monday,
+        ).aggregate(total=models.Sum('duration_minutes'))['total'] or 0
+        pct = min(round(total / self.weekly_minutes * 100), 100) if self.weekly_minutes > 0 else 0
+        return {'current': total, 'target': self.weekly_minutes, 'pct': pct}

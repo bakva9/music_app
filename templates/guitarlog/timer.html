@@ -9,16 +9,16 @@
     <!-- Timer Display -->
     <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-cosmic-200/30 dark:border-white/10 text-center mb-6">
         <div class="w-16 h-16 mx-auto mb-4 animate-float">{% include "partials/baku/_baku_playing.html" %}</div>
-        <div class="text-6xl font-mono font-bold text-cosmic-500 dark:text-cosmic-300 text-glow mb-6" x-text="formatTime()"></div>
+        <div class="text-4xl sm:text-6xl font-mono font-bold text-cosmic-500 dark:text-cosmic-300 text-glow mb-6" x-text="formatTime()"></div>
         <div class="flex justify-center gap-3">
             <button @click="start()" x-show="!running && !paused"
-                    class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-8 py-3 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300 text-lg">開始</button>
+                    class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-5 sm:px-8 py-2.5 sm:py-3 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300 text-base sm:text-lg">開始</button>
             <button @click="pause()" x-show="running"
-                    class="bg-gradient-to-r from-stardust to-yellow-400 text-white px-8 py-3 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300 text-lg">一時停止</button>
+                    class="bg-gradient-to-r from-stardust to-yellow-400 text-white px-5 sm:px-8 py-2.5 sm:py-3 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300 text-base sm:text-lg">一時停止</button>
             <button @click="resume()" x-show="paused"
-                    class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-8 py-3 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300 text-lg">再開</button>
+                    class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-5 sm:px-8 py-2.5 sm:py-3 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300 text-base sm:text-lg">再開</button>
             <button @click="stop()" x-show="running || paused"
-                    class="bg-gradient-to-r from-comet to-red-400 text-white px-8 py-3 rounded-2xl font-display font-bold transition-all duration-300 text-lg">停止</button>
+                    class="bg-gradient-to-r from-comet to-red-400 text-white px-5 sm:px-8 py-2.5 sm:py-3 rounded-2xl font-display font-bold transition-all duration-300 text-base sm:text-lg">停止</button>
         </div>
     </div>
 

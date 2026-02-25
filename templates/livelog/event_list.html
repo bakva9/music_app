@@ -6,6 +6,7 @@
 <div class="flex justify-between items-center mb-6">
     <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow">ライブ記録</h1>
     <div class="flex gap-3">
+        <a href="{% url 'livelog:live_stats' %}" class="text-sm text-cosmic-500 dark:text-cosmic-300 hover:text-cosmic-400 dark:hover:text-cosmic-200 transition-colors">統計</a>
         <a href="{% url 'livelog:expense_list' %}" class="text-sm text-cosmic-500 dark:text-cosmic-300 hover:text-cosmic-400 dark:hover:text-cosmic-200 transition-colors">費用一覧</a>
         <a href="{% url 'livelog:event_create' %}" class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-4 py-2 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300 text-sm">ライブを追加</a>
     </div>
@@ -15,17 +16,24 @@
 <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-3">予定のライブ</h2>
 <div class="grid gap-4 mb-8">
     {% for event in upcoming %}
-    <a href="{% url 'livelog:event_detail' event.pk %}" class="block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-supernova/20 dark:border-supernova/20 hover:shadow-glow transition-all duration-300">
-        <div class="flex justify-between items-start">
-            <div>
-                <div class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90">{{ event.artist }}</div>
-                {% if event.title %}<div class="text-sm text-cosmic-600/60 dark:text-white/50">{{ event.title }}</div>{% endif %}
-                <div class="flex gap-3 mt-2 text-sm text-cosmic-600/60 dark:text-white/50">
-                    <span>{{ event.date|date:"Y/m/d" }}</span>
-                    {% if event.venue %}<span>{{ event.venue }}</span>{% endif %}
-                </div>
+    <a href="{% url 'livelog:event_detail' event.pk %}" class="block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl overflow-hidden border border-supernova/20 dark:border-supernova/20 hover:shadow-glow transition-all duration-300">
+        <div class="flex items-center p-5 gap-4">
+            {% if event.thumbnail %}
+            <div class="w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden">
+                <img src="{{ event.thumbnail.url }}" alt="{{ event.artist }}" class="w-full h-full object-cover">
             </div>
-            <div class="text-supernova dark:text-supernova font-mono font-bold text-glow" x-data x-text="(() => { const d = Math.ceil((new Date('{{ event.date|date:'Y-m-d' }}') - new Date()) / 86400000); return d === 0 ? '今日！' : 'あと' + d + '日'; })()"></div>
+            {% endif %}
+            <div class="flex-1 flex justify-between items-start">
+                <div>
+                    <div class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90">{{ event.artist }}</div>
+                    {% if event.title %}<div class="text-sm text-cosmic-600/60 dark:text-white/50">{{ event.title }}</div>{% endif %}
+                    <div class="flex gap-3 mt-2 text-sm text-cosmic-600/60 dark:text-white/50">
+                        <span>{{ event.date|date:"Y/m/d" }}</span>
+                        {% if event.venue %}<span>{{ event.venue }}</span>{% endif %}
+                    </div>
+                </div>
+                <div class="text-supernova dark:text-supernova font-mono font-bold text-glow" x-data x-text="(() => { const d = Math.ceil((new Date('{{ event.date|date:'Y-m-d' }}') - new Date()) / 86400000); return d === 0 ? '今日！' : 'あと' + d + '日'; })()"></div>
+            </div>
         </div>
     </a>
     {% endfor %}
@@ -36,15 +44,22 @@
 <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-3">過去のライブ</h2>
 <div class="grid gap-3">
     {% for event in past %}
-    <a href="{% url 'livelog:event_detail' event.pk %}" class="block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-cosmic-200/30 dark:border-white/10 hover:shadow-glow-sm transition-all duration-300">
-        <div class="flex justify-between items-center">
-            <div>
-                <span class="font-bold">{{ event.artist }}</span>
-                {% if event.title %}<span class="text-sm text-cosmic-600/60 dark:text-white/50 ml-2">{{ event.title }}</span>{% endif %}
+    <a href="{% url 'livelog:event_detail' event.pk %}" class="block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl overflow-hidden border border-cosmic-200/30 dark:border-white/10 hover:shadow-glow-sm transition-all duration-300">
+        <div class="flex items-center p-4 gap-3">
+            {% if event.thumbnail %}
+            <div class="w-14 h-14 flex-shrink-0 rounded-lg overflow-hidden">
+                <img src="{{ event.thumbnail.url }}" alt="{{ event.artist }}" class="w-full h-full object-cover">
             </div>
-            <div class="text-sm text-cosmic-600/60 dark:text-white/50">
-                {{ event.date|date:"Y/m/d" }}
-                {% if event.venue %} @ {{ event.venue }}{% endif %}
+            {% endif %}
+            <div class="flex-1 flex justify-between items-center">
+                <div>
+                    <span class="font-bold">{{ event.artist }}</span>
+                    {% if event.title %}<span class="text-sm text-cosmic-600/60 dark:text-white/50 ml-2">{{ event.title }}</span>{% endif %}
+                </div>
+                <div class="text-sm text-cosmic-600/60 dark:text-white/50">
+                    {{ event.date|date:"Y/m/d" }}
+                    {% if event.venue %} @ {{ event.venue }}{% endif %}
+                </div>
             </div>
         </div>
     </a>

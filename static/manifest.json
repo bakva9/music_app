@@ -1,0 +1,25 @@
+{
+  "name": "残音 - 音楽学習パートナー",
+  "short_name": "残音",
+  "description": "練習記録・作曲管理・ライブ記録・音楽理論を一元管理する音楽学習アプリ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#2a0810",
+  "theme_color": "#c73058",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/static/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "music"]
+}

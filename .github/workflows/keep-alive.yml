@@ -2,7 +2,10 @@ name: Keep Alive
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # 5分ごとに実行（GitHub Actionsの遅延を考慮）
+    - cron: '*/14 * * * *'
+  push:
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   ping:

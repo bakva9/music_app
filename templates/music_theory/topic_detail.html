@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}{{ topic.title }} - 音楽理論{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-start mb-6">
+        <div>
+            <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow">{{ topic.title }}</h1>
+            <div class="flex flex-wrap gap-2 mt-2">
+                <span class="bg-cosmic-100/50 dark:bg-white/10 px-2 py-1 rounded text-sm text-white/60">{{ topic.get_category_display }}</span>
+                <span class="bg-cosmic-100/50 dark:bg-white/10 px-2 py-1 rounded text-sm text-white/60">{{ topic.get_difficulty_display }}</span>
+            </div>
+        </div>
+        {% if user.is_authenticated %}
+        <div id="bookmark-btn">
+            {% include "music_theory/_bookmark_button.html" %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Summary -->
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 mb-6 border border-cosmic-200/30 dark:border-white/10">
+        <p class="text-white/70 leading-relaxed">{{ topic.summary }}</p>
+    </div>
+
+    <!-- Body -->
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 mb-6 border border-cosmic-200/30 dark:border-white/10">
+        <div class="prose-custom text-white/80 leading-relaxed whitespace-pre-line">{{ topic.body|linebreaksbr }}</div>
+    </div>
+
+    <!-- Tags -->
+    {% if topic.tags %}
+    <div class="flex flex-wrap gap-2 mb-6">
+        {% for tag in topic.tag_list %}
+        <span class="bg-cosmic-500/10 text-cosmic-300 px-2.5 py-1 rounded-full text-xs">{{ tag }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Related Topics -->
+    {% if related_topics %}
+    <div class="mb-6">
+        <h2 class="font-display text-lg font-bold text-white/90 mb-3">関連トピック</h2>
+        <div class="grid gap-2">
+            {% for related in related_topics %}
+            <a href="{% url 'music_theory:topic_detail' related.slug %}"
+               class="block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-xl p-3 border border-cosmic-200/30 dark:border-white/10 hover:shadow-glow transition-all duration-300">
+                <div class="flex justify-between items-center">
+                    <span class="font-medium text-white/80">{{ related.title }}</span>
+                    <span class="text-xs text-white/40">{{ related.get_category_display }}</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="mt-6">
+        <a href="{% url 'music_theory:topic_list' %}" class="text-cosmic-500 dark:text-cosmic-300 hover:text-cosmic-400 dark:hover:text-cosmic-200 transition-colors">&larr; 一覧に戻る</a>
+    </div>
+</div>
+{% endblock %}

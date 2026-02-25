@@ -1,36 +1,41 @@
 {% extends "base.html" %}
 
-{% block title %}ログイン - MusicApp{% endblock %}
+{% block title %}ログイン - 残音{% endblock %}
 
 {% block content %}
 <div class="max-w-md mx-auto">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-8 border border-gray-200 dark:border-gray-700">
-        <h1 class="text-2xl font-bold text-center mb-6">ログイン</h1>
+    <div class="text-center mb-6">
+        <div class="w-20 h-20 mx-auto mb-3 animate-float">
+            {% include "partials/baku/_baku_greeting.html" %}
+        </div>
+    </div>
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-lg rounded-2xl shadow-glow-sm p-8 border border-cosmic-200/30 dark:border-white/10">
+        <h1 class="font-display text-2xl font-bold text-center mb-6 text-cosmic-800 dark:text-white text-glow">ログイン</h1>
         <form method="POST" action="{% url 'account_login' %}" class="space-y-4">
             {% csrf_token %}
             {% for field in form %}
             <div>
-                <label for="{{ field.id_for_label }}" class="block text-sm font-medium mb-1">{{ field.label }}</label>
+                <label for="{{ field.id_for_label }}" class="block text-sm font-display font-medium mb-1 text-cosmic-700 dark:text-white/70">{{ field.label }}</label>
                 {{ field }}
                 {% if field.errors %}
-                <p class="text-red-500 text-sm mt-1">{{ field.errors.0 }}</p>
+                <p class="text-comet text-sm mt-1">{{ field.errors.0 }}</p>
                 {% endif %}
             </div>
             {% endfor %}
             {% if form.non_field_errors %}
-            <div class="bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 p-3 rounded-lg text-sm">
+            <div class="bg-comet/10 border border-comet/20 text-comet p-3 rounded-xl text-sm backdrop-blur-md">
                 {% for error in form.non_field_errors %}
                 <p>{{ error }}</p>
                 {% endfor %}
             </div>
             {% endif %}
-            <button type="submit" class="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 font-medium">
+            <button type="submit" class="w-full bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white py-3 px-4 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300 hover:scale-[1.02]">
                 ログイン
             </button>
         </form>
-        <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
+        <p class="text-center text-sm text-cosmic-600/60 dark:text-white/40 mt-5 font-display">
             アカウントをお持ちでないですか？
-            <a href="{% url 'account_signup' %}" class="text-primary-600 dark:text-primary-400 hover:underline">新規登録</a>
+            <a href="{% url 'account_signup' %}" class="text-cosmic-500 dark:text-cosmic-300 hover:text-cosmic-400 dark:hover:text-cosmic-200 transition-colors font-medium">新規登録</a>
         </p>
     </div>
 </div>

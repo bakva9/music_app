@@ -1,60 +1,109 @@
 {% extends "base.html" %}
 
-{% block title %}MusicApp - ダッシュボード{% endblock %}
+{% block title %}残音 - ダッシュボード{% endblock %}
 
 {% block content %}
-<div class="text-center mb-8">
-    <h1 class="text-3xl font-bold mb-2">MusicApp</h1>
-    <p class="text-gray-600 dark:text-gray-400">あなたの音楽ライフをもっと楽しく</p>
+<div class="text-center mb-10">
+    <div class="w-24 h-24 mx-auto mb-4 animate-float">
+        {% include "partials/baku/_baku_greeting.html" %}
+    </div>
+    <h1 class="font-display text-3xl font-bold mb-2 text-glow text-cosmic-800 dark:text-white">残音</h1>
+    <p class="text-cosmic-600/60 dark:text-white/50 font-display">現実の音がここにある。</p>
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    <!-- JPop Chord -->
-    <a href="{% url 'jpop_chord:song_list' %}" class="group block bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition p-6 border border-gray-200 dark:border-gray-700">
-        <div class="text-4xl mb-3">🎵</div>
-        <h2 class="text-lg font-bold mb-1 group-hover:text-primary-600 dark:group-hover:text-primary-400">コード譜</h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400">J-POPのコード譜を検索・表示。カポ変換や自動スクロールで演奏をサポート。</p>
+    <!-- Music Theory -->
+    <a href="{% url 'music_theory:topic_list' %}"
+       class="group block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10
+              hover:border-cosmic-400/30 dark:hover:border-cosmic-400/30 hover:shadow-[0_8px_40px_rgba(199,48,88,0.15)]
+              transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]
+              animate-scale-in" style="animation-delay: 0ms; animation-fill-mode: both;">
+        <div class="w-12 h-12 rounded-xl bg-cosmic-500/10 dark:bg-cosmic-500/15 flex items-center justify-center mb-3 group-hover:bg-cosmic-500/20 group-hover:scale-110 group-hover:-rotate-3 transition-all duration-200">
+            <span class="text-3xl">📖</span>
+        </div>
+        <h2 class="font-display text-lg font-bold mb-1 text-cosmic-800 dark:text-white/90 group-hover:text-cosmic-600 dark:group-hover:text-cosmic-300 transition-colors">音楽理論</h2>
+        <p class="text-sm text-cosmic-600/60 dark:text-white/50">スケール・コード・進行などの音楽理論を検索。ブックマーク＆メモで学習をサポート。</p>
     </a>
 
     <!-- GuitarLog -->
-    <a href="{% url 'guitarlog:home' %}" class="group block bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition p-6 border border-gray-200 dark:border-gray-700">
-        <div class="text-4xl mb-3">🎸</div>
-        <h2 class="text-lg font-bold mb-1 group-hover:text-primary-600 dark:group-hover:text-primary-400">練習記録</h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400">ギター練習の時間を記録。ストリークで継続をモチベーションに。</p>
+    <a href="{% url 'guitarlog:home' %}"
+       class="group block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10
+              hover:border-nebula-400/30 dark:hover:border-nebula-400/30 hover:shadow-[0_8px_40px_rgba(240,112,32,0.15)]
+              transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]
+              animate-scale-in" style="animation-delay: 100ms; animation-fill-mode: both;">
+        <div class="w-12 h-12 rounded-xl bg-nebula-500/10 dark:bg-nebula-500/15 flex items-center justify-center mb-3 group-hover:bg-nebula-500/20 group-hover:scale-110 group-hover:-rotate-3 transition-all duration-200">
+            <span class="text-3xl">🎸</span>
+        </div>
+        <h2 class="font-display text-lg font-bold mb-1 text-cosmic-800 dark:text-white/90 group-hover:text-nebula-600 dark:group-hover:text-nebula-300 transition-colors">練習記録</h2>
+        <p class="text-sm text-cosmic-600/60 dark:text-white/50">ギター練習の時間を記録。ストリークで継続をモチベーションに。</p>
     </a>
 
     <!-- LiveLog -->
-    <a href="{% url 'livelog:event_list' %}" class="group block bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition p-6 border border-gray-200 dark:border-gray-700">
-        <div class="text-4xl mb-3">🎤</div>
-        <h2 class="text-lg font-bold mb-1 group-hover:text-primary-600 dark:group-hover:text-primary-400">ライブ記録</h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400">ライブの思い出を記録。セトリ・感想・費用をまとめて管理。</p>
+    <a href="{% url 'livelog:event_list' %}"
+       class="group block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10
+              hover:border-orange-400/30 dark:hover:border-orange-400/30 hover:shadow-[0_8px_40px_rgba(255,159,67,0.15)]
+              transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]
+              animate-scale-in" style="animation-delay: 200ms; animation-fill-mode: both;">
+        <div class="w-12 h-12 rounded-xl bg-orange-500/10 dark:bg-orange-500/15 flex items-center justify-center mb-3 group-hover:bg-orange-500/20 group-hover:scale-110 group-hover:-rotate-3 transition-all duration-200">
+            <span class="text-3xl">🎤</span>
+        </div>
+        <h2 class="font-display text-lg font-bold mb-1 text-cosmic-800 dark:text-white/90 group-hover:text-orange-600 dark:group-hover:text-orange-300 transition-colors">ライブ記録</h2>
+        <p class="text-sm text-cosmic-600/60 dark:text-white/50">ライブの思い出を記録。セトリ・感想・費用をまとめて管理。</p>
     </a>
 
     <!-- SongDiary -->
-    <a href="{% url 'songdiary:project_list' %}" class="group block bg-white dark:bg-gray-800 rounded-xl shadow hover:shadow-lg transition p-6 border border-gray-200 dark:border-gray-700">
-        <div class="text-4xl mb-3">🎹</div>
-        <h2 class="text-lg font-bold mb-1 group-hover:text-primary-600 dark:group-hover:text-primary-400">作曲管理</h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400">作曲プロジェクトの進捗を管理。テキスト・音声・写真メモで記録。</p>
+    <a href="{% url 'songdiary:project_list' %}"
+       class="group block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10
+              hover:border-green-400/30 dark:hover:border-green-400/30 hover:shadow-[0_8px_40px_rgba(0,255,136,0.1)]
+              transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]
+              animate-scale-in" style="animation-delay: 300ms; animation-fill-mode: both;">
+        <div class="w-12 h-12 rounded-xl bg-green-500/10 dark:bg-green-500/15 flex items-center justify-center mb-3 group-hover:bg-green-500/20 group-hover:scale-110 group-hover:-rotate-3 transition-all duration-200">
+            <span class="text-3xl">🎹</span>
+        </div>
+        <h2 class="font-display text-lg font-bold mb-1 text-cosmic-800 dark:text-white/90 group-hover:text-green-600 dark:group-hover:text-green-300 transition-colors">作曲管理</h2>
+        <p class="text-sm text-cosmic-600/60 dark:text-white/50">作曲プロジェクトの進捗を管理。テキスト・音声・写真メモで記録。</p>
     </a>
 </div>
 
 {% if user.is_authenticated %}
-<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center">
-        <div class="text-2xl font-bold text-primary-600 dark:text-primary-400" id="stat-favorites">-</div>
-        <div class="text-sm text-gray-500 dark:text-gray-400">お気に入り曲</div>
+<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+     x-data="{ shown: false }"
+     x-intersect.once="shown = true">
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 text-center border-t-2 border-t-cosmic-400
+                transition-all duration-300 hover:shadow-[0_4px_20px_rgba(199,48,88,0.1)]">
+        <div class="text-2xl font-mono font-bold text-cosmic-600 dark:text-cosmic-300"
+             x-data="{ count: 0, target: {{ bookmark_count|default:0 }} }"
+             x-init="if(shown) { let i = setInterval(() => { if(count >= target) clearInterval(i); else count++ }, 50) }"
+             x-effect="if(shown && count === 0 && target > 0) { let i = setInterval(() => { if(count >= target) clearInterval(i); else count++ }, 50) }"
+             x-text="count">{{ bookmark_count|default:0 }}</div>
+        <div class="text-sm text-cosmic-600/60 dark:text-white/50 font-display mt-1">ブックマーク</div>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center">
-        <div class="text-2xl font-bold text-primary-600 dark:text-primary-400" id="stat-streak">-</div>
-        <div class="text-sm text-gray-500 dark:text-gray-400">練習ストリーク</div>
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 text-center border-t-2 border-t-nebula-400
+                transition-all duration-300 hover:shadow-[0_4px_20px_rgba(240,112,32,0.1)]">
+        <div class="text-2xl font-mono font-bold text-nebula-600 dark:text-nebula-300"
+             x-data="{ count: 0, target: {{ streak_count|default:0 }} }"
+             x-init="if(shown) { let i = setInterval(() => { if(count >= target) clearInterval(i); else count++ }, 50) }"
+             x-effect="if(shown && count === 0 && target > 0) { let i = setInterval(() => { if(count >= target) clearInterval(i); else count++ }, 50) }"
+             x-text="count + '日'">{{ streak_count|default:0 }}日</div>
+        <div class="text-sm text-cosmic-600/60 dark:text-white/50 font-display mt-1">練習ストリーク</div>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center">
-        <div class="text-2xl font-bold text-primary-600 dark:text-primary-400" id="stat-lives">-</div>
-        <div class="text-sm text-gray-500 dark:text-gray-400">ライブ参戦数</div>
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 text-center border-t-2 border-t-supernova
+                transition-all duration-300 hover:shadow-[0_4px_20px_rgba(255,159,67,0.1)]">
+        <div class="text-2xl font-mono font-bold text-supernova dark:text-supernova"
+             x-data="{ count: 0, target: {{ live_count|default:0 }} }"
+             x-init="if(shown) { let i = setInterval(() => { if(count >= target) clearInterval(i); else count++ }, 50) }"
+             x-effect="if(shown && count === 0 && target > 0) { let i = setInterval(() => { if(count >= target) clearInterval(i); else count++ }, 50) }"
+             x-text="count">{{ live_count|default:0 }}</div>
+        <div class="text-sm text-cosmic-600/60 dark:text-white/50 font-display mt-1">ライブ参戦数</div>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 text-center">
-        <div class="text-2xl font-bold text-primary-600 dark:text-primary-400" id="stat-songs">-</div>
-        <div class="text-sm text-gray-500 dark:text-gray-400">作曲プロジェクト</div>
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 text-center border-t-2 border-t-aurora
+                transition-all duration-300 hover:shadow-[0_4px_20px_rgba(0,255,136,0.1)]">
+        <div class="text-2xl font-mono font-bold text-green-600 dark:text-aurora"
+             x-data="{ count: 0, target: {{ project_count|default:0 }} }"
+             x-init="if(shown) { let i = setInterval(() => { if(count >= target) clearInterval(i); else count++ }, 50) }"
+             x-effect="if(shown && count === 0 && target > 0) { let i = setInterval(() => { if(count >= target) clearInterval(i); else count++ }, 50) }"
+             x-text="count">{{ project_count|default:0 }}</div>
+        <div class="text-sm text-cosmic-600/60 dark:text-white/50 font-display mt-1">作曲プロジェクト</div>
     </div>
 </div>
 {% endif %}

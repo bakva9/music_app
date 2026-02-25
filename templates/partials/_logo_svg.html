@@ -1,0 +1,68 @@
+<!-- SVG Logo: 残音 (Nokorine) - Cosmic Music Theme -->
+<!-- Sound wave + crescent moon motif representing "残った音" (lingering sound) -->
+<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="{{ class|default:'w-10 h-10' }}" aria-label="残音ロゴ">
+  <defs>
+    <!-- Cosmic gradient: pink → orange → gold -->
+    <linearGradient id="logo-grad-{{ id|default:'main' }}" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c73058"/>
+      <stop offset="50%" stop-color="#f07020"/>
+      <stop offset="100%" stop-color="#ffd700"/>
+    </linearGradient>
+    <!-- Ambient glow filter -->
+    <filter id="logo-glow-{{ id|default:'main' }}" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <!-- Inner glow for depth -->
+    <radialGradient id="logo-inner-{{ id|default:'main' }}" cx="40%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#ffd700" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#c73058" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Outer ring with cosmic gradient -->
+  <circle cx="60" cy="60" r="56" stroke="url(#logo-grad-{{ id|default:'main' }})" stroke-width="2.5" fill="none" opacity="0.6">
+    <animateTransform attributeName="transform" type="rotate" from="0 60 60" to="360 60 60" dur="60s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Background disk -->
+  <circle cx="60" cy="60" r="50" fill="#1a0a12" opacity="0.9"/>
+  <circle cx="60" cy="60" r="50" fill="url(#logo-inner-{{ id|default:'main' }})"/>
+
+  <!-- Sound wave arcs (残った音 = lingering sound) -->
+  <g opacity="0.7" filter="url(#logo-glow-{{ id|default:'main' }})">
+    <!-- Wave 1 (innermost) -->
+    <path d="M72 60 Q72 48 60 48" stroke="#f07020" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.9">
+      <animate attributeName="opacity" values="0.9;0.4;0.9" dur="2.5s" repeatCount="indefinite"/>
+    </path>
+    <!-- Wave 2 -->
+    <path d="M80 60 Q80 40 60 40" stroke="#fb923c" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7">
+      <animate attributeName="opacity" values="0.7;0.3;0.7" dur="2.5s" begin="0.3s" repeatCount="indefinite"/>
+    </path>
+    <!-- Wave 3 (outermost, fading) -->
+    <path d="M88 60 Q88 32 60 32" stroke="#ffd700" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4">
+      <animate attributeName="opacity" values="0.4;0.15;0.4" dur="2.5s" begin="0.6s" repeatCount="indefinite"/>
+    </path>
+  </g>
+
+  <!-- Crescent moon (夢を食べるバク = dream-eating baku) -->
+  <path d="M38 38 Q28 52 38 72 Q50 62 50 52 Q50 42 38 38Z" fill="url(#logo-grad-{{ id|default:'main' }})" opacity="0.85"/>
+
+  <!-- Musical note accent -->
+  <g transform="translate(54,58)" opacity="0.9">
+    <ellipse cx="0" cy="8" rx="5" ry="3.5" fill="url(#logo-grad-{{ id|default:'main' }})" transform="rotate(-15)"/>
+    <rect x="4" y="-10" width="2" height="18" rx="1" fill="url(#logo-grad-{{ id|default:'main' }})"/>
+    <path d="M6 -10 Q14 -14 14 -6 Q14 -2 6 -4" fill="url(#logo-grad-{{ id|default:'main' }})" opacity="0.8"/>
+  </g>
+
+  <!-- Tiny stars -->
+  <circle cx="82" cy="28" r="1.2" fill="#ffd700" opacity="0.6">
+    <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="28" cy="82" r="1" fill="#f2a0b4" opacity="0.5">
+    <animate attributeName="opacity" values="0.2;0.7;0.2" dur="2.8s" begin="0.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="90" cy="70" r="0.8" fill="#fb923c" opacity="0.4">
+    <animate attributeName="opacity" values="0.2;0.6;0.2" dur="3.2s" begin="1s" repeatCount="indefinite"/>
+  </circle>
+</svg>

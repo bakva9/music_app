@@ -1,24 +1,24 @@
 {% extends "base.html" %}
 
-{% block title %}作曲管理 - MusicApp{% endblock %}
+{% block title %}作曲管理 - 残音{% endblock %}
 
 {% block content %}
 <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold">作曲管理</h1>
-    <a href="{% url 'songdiary:project_create' %}" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 text-sm font-medium">新規プロジェクト</a>
+    <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow">作曲管理</h1>
+    <a href="{% url 'songdiary:project_create' %}" class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-4 py-2 rounded-xl text-sm font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300">新規プロジェクト</a>
 </div>
 
 <!-- Status Filter -->
 <div class="flex flex-wrap gap-2 mb-6">
     <a href="{% url 'songdiary:project_list' %}"
-       class="px-3 py-1.5 rounded-lg text-sm font-medium transition
-              {% if not current_status %}bg-primary-600 text-white{% else %}bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600{% endif %}">
+       class="px-3 py-1.5 rounded-xl text-sm font-medium transition-all duration-300
+              {% if not current_status %}bg-cosmic-500 text-white{% else %}bg-white/60 dark:bg-white/5 text-cosmic-600 dark:text-white/60 border border-cosmic-200/30 dark:border-white/10{% endif %}">
         すべて
     </a>
     {% for value, label in status_choices %}
     <a href="?status={{ value }}"
-       class="px-3 py-1.5 rounded-lg text-sm font-medium transition
-              {% if current_status == value %}bg-primary-600 text-white{% else %}bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600{% endif %}">
+       class="px-3 py-1.5 rounded-xl text-sm font-medium transition-all duration-300
+              {% if current_status == value %}bg-cosmic-500 text-white{% else %}bg-white/60 dark:bg-white/5 text-cosmic-600 dark:text-white/60 border border-cosmic-200/30 dark:border-white/10{% endif %}">
         {{ label }}
     </a>
     {% endfor %}
@@ -28,35 +28,38 @@
 <div class="grid gap-4 sm:grid-cols-2">
     {% for project in projects %}
     <a href="{% url 'songdiary:project_detail' project.pk %}"
-       class="block bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition">
+       class="block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 hover:shadow-glow transition-all duration-300">
         <div class="flex justify-between items-start mb-2">
-            <h2 class="font-bold text-lg">{{ project.title }}</h2>
+            <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90">{{ project.title }}</h2>
             <span class="text-xs px-2 py-1 rounded-full
-                {% if project.status == 'done' %}bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300
-                {% elif project.status == 'idea' %}bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300
-                {% else %}bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300{% endif %}">
+                {% if project.status == 'done' %}bg-aurora/10 text-green-600 dark:text-aurora/80
+                {% elif project.status == 'idea' %}bg-cosmic-100/50 dark:bg-white/10 text-cosmic-600 dark:text-white/60
+                {% else %}bg-nebula-400/15 text-nebula-600 dark:text-nebula-300{% endif %}">
                 {{ project.get_status_display }}
             </span>
         </div>
-        <div class="flex gap-2 text-xs text-gray-500 dark:text-gray-400 mb-2">
+        <div class="flex gap-2 text-xs text-cosmic-600/60 dark:text-white/50 mb-2">
             {% if project.key %}<span>Key: {{ project.key }}</span>{% endif %}
             {% if project.bpm %}<span>{{ project.bpm }} BPM</span>{% endif %}
         </div>
         {% if project.tag_list %}
         <div class="flex flex-wrap gap-1 mb-2">
             {% for tag in project.tag_list %}
-            <span class="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">#{{ tag }}</span>
+            <span class="text-xs bg-cosmic-100/50 dark:bg-white/10 px-2 py-0.5 rounded">#{{ tag }}</span>
             {% endfor %}
         </div>
         {% endif %}
         {% if project.description %}
-        <p class="text-sm text-gray-500 dark:text-gray-400">{{ project.description|truncatewords:15 }}</p>
+        <p class="text-sm text-cosmic-600/60 dark:text-white/50">{{ project.description|truncatewords:15 }}</p>
         {% endif %}
-        <div class="text-xs text-gray-400 mt-2">更新: {{ project.updated_at|date:"Y/m/d H:i" }}</div>
+        <div class="text-xs text-cosmic-600/60 dark:text-white/50 mt-2">更新: {{ project.updated_at|date:"Y/m/d H:i" }}</div>
     </a>
     {% endfor %}
 </div>
 {% else %}
-<div class="text-center py-12 text-gray-500 dark:text-gray-400">プロジェクトがまだありません</div>
+<div class="text-center py-12 text-cosmic-600/50 dark:text-white/40">
+    <div class="w-20 h-20 mx-auto mb-4 opacity-60">{% include "partials/baku/_baku_sleeping.html" %}</div>
+    プロジェクトがまだありません
+</div>
 {% endif %}
 {% endblock %}

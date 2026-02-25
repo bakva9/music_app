@@ -1,55 +1,55 @@
 {% extends "base.html" %}
 
-{% block title %}練習記録 - MusicApp{% endblock %}
+{% block title %}練習記録 - 残音{% endblock %}
 
 {% block content %}
-<h1 class="text-2xl font-bold mb-6">練習記録</h1>
+<h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow mb-6">練習記録</h1>
 
 <!-- Streak & Stats -->
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 text-center">
-        <div class="text-4xl font-bold text-primary-600 dark:text-primary-400">{{ streak }}</div>
-        <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">日連続ストリーク</div>
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10 text-center">
+        <div class="text-4xl font-mono font-bold text-cosmic-500 dark:text-cosmic-300 text-glow">{{ streak }}</div>
+        <div class="text-sm text-cosmic-600/60 dark:text-white/50 mt-1">日連続ストリーク</div>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 text-center">
-        <div class="text-4xl font-bold text-primary-600 dark:text-primary-400">{{ total_minutes }}</div>
-        <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">分（累計練習時間）</div>
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10 text-center">
+        <div class="text-4xl font-mono font-bold text-cosmic-500 dark:text-cosmic-300 text-glow">{{ total_minutes }}</div>
+        <div class="text-sm text-cosmic-600/60 dark:text-white/50 mt-1">分（累計練習時間）</div>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 text-center">
-        <div class="text-4xl font-bold text-primary-600 dark:text-primary-400">{{ recent_sessions|length }}</div>
-        <div class="text-sm text-gray-500 dark:text-gray-400 mt-1">最近のセッション</div>
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10 text-center">
+        <div class="text-4xl font-mono font-bold text-cosmic-500 dark:text-cosmic-300 text-glow">{{ recent_sessions|length }}</div>
+        <div class="text-sm text-cosmic-600/60 dark:text-white/50 mt-1">最近のセッション</div>
     </div>
 </div>
 
 <!-- Quick Actions -->
 <div class="flex flex-wrap gap-3 mb-8">
-    <a href="{% url 'guitarlog:timer' %}" class="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 font-medium">タイマー練習</a>
-    <a href="{% url 'guitarlog:quick_record' %}" class="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 font-medium">クイック記録</a>
-    <a href="{% url 'guitarlog:song_list' %}" class="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 font-medium">練習曲</a>
-    <a href="{% url 'guitarlog:stats' %}" class="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-6 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600 font-medium">統計</a>
+    <a href="{% url 'guitarlog:timer' %}" class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-6 py-3 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300">タイマー練習</a>
+    <a href="{% url 'guitarlog:quick_record' %}" class="bg-white/60 dark:bg-white/5 backdrop-blur-md text-cosmic-700 dark:text-white/70 px-6 py-3 rounded-xl font-medium border border-cosmic-200/30 dark:border-white/10 hover:bg-white/80 dark:hover:bg-white/10 transition-all duration-200">クイック記録</a>
+    <a href="{% url 'guitarlog:song_list' %}" class="bg-white/60 dark:bg-white/5 backdrop-blur-md text-cosmic-700 dark:text-white/70 px-6 py-3 rounded-xl font-medium border border-cosmic-200/30 dark:border-white/10 hover:bg-white/80 dark:hover:bg-white/10 transition-all duration-200">練習曲</a>
+    <a href="{% url 'guitarlog:stats' %}" class="bg-white/60 dark:bg-white/5 backdrop-blur-md text-cosmic-700 dark:text-white/70 px-6 py-3 rounded-xl font-medium border border-cosmic-200/30 dark:border-white/10 hover:bg-white/80 dark:hover:bg-white/10 transition-all duration-200">統計</a>
 </div>
 
 <!-- Recent Sessions -->
 {% if recent_sessions %}
-<h2 class="text-lg font-bold mb-3">最近のセッション</h2>
+<h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-3">最近のセッション</h2>
 <div class="space-y-2">
     {% for session in recent_sessions %}
-    <div class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-cosmic-200/30 dark:border-white/10">
         <div class="flex justify-between items-center">
             <div>
                 <span class="font-medium">{{ session.started_at|date:"m/d" }}</span>
-                <span class="text-gray-500 dark:text-gray-400 ml-2">{{ session.duration_minutes }}分</span>
+                <span class="text-cosmic-600/60 dark:text-white/50 ml-2">{{ session.duration_minutes }}分</span>
                 {% if session.is_quick_record %}
-                <span class="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded ml-2">クイック</span>
+                <span class="text-xs bg-cosmic-100/50 dark:bg-white/10 px-2 py-0.5 rounded ml-2">クイック</span>
                 {% endif %}
             </div>
             {% if session.rating %}
-            <div class="text-yellow-500">
+            <div class="text-stardust">
                 {% for i in "12345" %}{% if forloop.counter <= session.rating %}★{% else %}☆{% endif %}{% endfor %}
             </div>
             {% endif %}
         </div>
-        {% if session.memo %}<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ session.memo|truncatewords:20 }}</p>{% endif %}
+        {% if session.memo %}<p class="text-sm text-cosmic-600/60 dark:text-white/50 mt-1">{{ session.memo|truncatewords:20 }}</p>{% endif %}
     </div>
     {% endfor %}
 </div>

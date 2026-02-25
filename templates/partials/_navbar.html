@@ -1,32 +1,52 @@
-<nav class="bg-white dark:bg-gray-800 shadow" x-data="{ open: false }">
+<nav class="sticky top-0 z-50 bg-white/80 dark:bg-cosmic-950/80 backdrop-blur-xl border-b border-cosmic-200/30 dark:border-white/10 transition-colors duration-300"
+     x-data="{ open: false }"
+     role="navigation" aria-label="メインナビゲーション">
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex justify-between h-16">
             <div class="flex items-center">
-                <a href="{% url 'dashboard:home' %}" class="text-xl font-bold text-primary-600 dark:text-primary-400">
-                    ♪ MusicApp
+                <a href="{% url 'dashboard:home' %}" class="text-xl font-display font-bold text-cosmic-700 dark:text-white hover:opacity-80 transition-opacity">
+                    残音
                 </a>
-                <div class="hidden md:flex ml-8 space-x-4">
-                    <a href="{% url 'jpop_chord:song_list' %}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">コード譜</a>
-                    <a href="{% url 'guitarlog:home' %}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">練習記録</a>
-                    <a href="{% url 'livelog:event_list' %}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">ライブ記録</a>
-                    <a href="{% url 'songdiary:project_list' %}" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">作曲管理</a>
+                <div class="hidden md:flex ml-8 space-x-1">
+                    {% with request.resolver_match.namespace as current_ns %}
+                    <a href="{% url 'music_theory:topic_list' %}"
+                       class="relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                              {% if current_ns == 'music_theory' %}text-cosmic-600 dark:text-cosmic-300 bg-cosmic-100/50 dark:bg-white/10{% else %}text-cosmic-700/70 dark:text-white/60 hover:text-cosmic-700 dark:hover:text-white hover:bg-cosmic-100/50 dark:hover:bg-white/5{% endif %}">
+                        音楽理論
+                        {% if current_ns == 'music_theory' %}<span class="absolute bottom-0 left-3 right-3 h-0.5 bg-gradient-to-r from-cosmic-500 to-nebula-400 rounded-full"></span>{% endif %}
+                    </a>
+                    <a href="{% url 'guitarlog:home' %}"
+                       class="relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                              {% if current_ns == 'guitarlog' %}text-nebula-600 dark:text-nebula-300 bg-nebula-100/50 dark:bg-white/10{% else %}text-cosmic-700/70 dark:text-white/60 hover:text-cosmic-700 dark:hover:text-white hover:bg-cosmic-100/50 dark:hover:bg-white/5{% endif %}">
+                        練習記録
+                        {% if current_ns == 'guitarlog' %}<span class="absolute bottom-0 left-3 right-3 h-0.5 bg-gradient-to-r from-nebula-400 to-nebula-500 rounded-full"></span>{% endif %}
+                    </a>
+                    <a href="{% url 'livelog:event_list' %}"
+                       class="relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                              {% if current_ns == 'livelog' %}text-orange-600 dark:text-orange-300 bg-orange-100/50 dark:bg-white/10{% else %}text-cosmic-700/70 dark:text-white/60 hover:text-cosmic-700 dark:hover:text-white hover:bg-cosmic-100/50 dark:hover:bg-white/5{% endif %}">
+                        ライブ記録
+                        {% if current_ns == 'livelog' %}<span class="absolute bottom-0 left-3 right-3 h-0.5 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full"></span>{% endif %}
+                    </a>
+                    <a href="{% url 'songdiary:project_list' %}"
+                       class="relative px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200
+                              {% if current_ns == 'songdiary' %}text-green-600 dark:text-green-300 bg-green-100/50 dark:bg-white/10{% else %}text-cosmic-700/70 dark:text-white/60 hover:text-cosmic-700 dark:hover:text-white hover:bg-cosmic-100/50 dark:hover:bg-white/5{% endif %}">
+                        作曲管理
+                        {% if current_ns == 'songdiary' %}<span class="absolute bottom-0 left-3 right-3 h-0.5 bg-gradient-to-r from-green-400 to-green-500 rounded-full"></span>{% endif %}
+                    </a>
+                    {% endwith %}
                 </div>
             </div>
             <div class="flex items-center space-x-3">
-                <button @click="darkMode = !darkMode; localStorage.setItem('darkMode', darkMode)"
-                        class="p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <span x-show="!darkMode">🌙</span>
-                    <span x-show="darkMode">☀️</span>
-                </button>
                 {% if user.is_authenticated %}
-                <span class="text-sm text-gray-600 dark:text-gray-400 hidden sm:inline">{{ user.display_name|default:user.username }}</span>
-                <a href="{% url 'account_logout' %}" class="text-sm text-red-600 dark:text-red-400 hover:underline">ログアウト</a>
+                <span class="text-sm text-cosmic-600 dark:text-white/50 hidden sm:inline font-medium">{{ user.display_name|default:user.username }}</span>
+                <a href="{% url 'account_logout' %}" class="text-sm text-comet dark:text-comet/80 hover:text-comet/80 dark:hover:text-comet transition-colors">ログアウト</a>
                 {% else %}
-                <a href="{% url 'account_login' %}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">ログイン</a>
-                <a href="{% url 'account_signup' %}" class="bg-primary-600 text-white px-4 py-2 rounded-md text-sm hover:bg-primary-700">新規登録</a>
+                <a href="{% url 'account_login' %}" class="text-sm text-cosmic-600 dark:text-white/60 hover:text-cosmic-700 dark:hover:text-white transition-colors font-medium">ログイン</a>
+                <a href="{% url 'account_signup' %}" class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-4 py-2 rounded-full text-sm font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300 hover:scale-105 active:scale-[0.98]">新規登録</a>
                 {% endif %}
-                <button @click="open = !open" class="md:hidden p-2 rounded-md text-gray-500 dark:text-gray-400">
-                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button @click="open = !open" class="md:hidden p-2 rounded-lg text-cosmic-600 dark:text-white/50 hover:bg-cosmic-100/50 dark:hover:bg-white/10 transition-colors"
+                        :aria-expanded="open" aria-label="メニューを開く">
+                    <svg class="h-6 w-6 transition-transform duration-200" :class="{ 'rotate-90': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         <path x-show="open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -34,12 +54,22 @@
             </div>
         </div>
     </div>
-    <div x-show="open" @click.away="open = false" class="md:hidden border-t dark:border-gray-700">
-        <div class="px-2 pt-2 pb-3 space-y-1">
-            <a href="{% url 'jpop_chord:song_list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">コード譜</a>
-            <a href="{% url 'guitarlog:home' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">練習記録</a>
-            <a href="{% url 'livelog:event_list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">ライブ記録</a>
-            <a href="{% url 'songdiary:project_list' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">作曲管理</a>
+    <!-- Mobile menu -->
+    <div x-show="open" x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-2"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-2"
+         @click.away="open = false"
+         class="md:hidden bg-white/90 dark:bg-cosmic-950/95 backdrop-blur-xl border-t border-cosmic-200/20 dark:border-white/10">
+        <div class="px-3 pt-2 pb-3 space-y-1">
+            {% with request.resolver_match.namespace as current_ns %}
+            <a href="{% url 'music_theory:topic_list' %}" class="block px-3 py-2.5 rounded-lg text-base font-display font-medium transition-colors {% if current_ns == 'music_theory' %}text-cosmic-600 dark:text-cosmic-300 bg-cosmic-100/50 dark:bg-white/10{% else %}text-cosmic-700 dark:text-white/70 hover:bg-cosmic-100/50 dark:hover:bg-white/5 hover:text-cosmic-800 dark:hover:text-white{% endif %}">音楽理論</a>
+            <a href="{% url 'guitarlog:home' %}" class="block px-3 py-2.5 rounded-lg text-base font-display font-medium transition-colors {% if current_ns == 'guitarlog' %}text-nebula-600 dark:text-nebula-300 bg-nebula-100/50 dark:bg-white/10{% else %}text-cosmic-700 dark:text-white/70 hover:bg-cosmic-100/50 dark:hover:bg-white/5 hover:text-cosmic-800 dark:hover:text-white{% endif %}">練習記録</a>
+            <a href="{% url 'livelog:event_list' %}" class="block px-3 py-2.5 rounded-lg text-base font-display font-medium transition-colors {% if current_ns == 'livelog' %}text-orange-600 dark:text-orange-300 bg-orange-100/50 dark:bg-white/10{% else %}text-cosmic-700 dark:text-white/70 hover:bg-cosmic-100/50 dark:hover:bg-white/5 hover:text-cosmic-800 dark:hover:text-white{% endif %}">ライブ記録</a>
+            <a href="{% url 'songdiary:project_list' %}" class="block px-3 py-2.5 rounded-lg text-base font-display font-medium transition-colors {% if current_ns == 'songdiary' %}text-green-600 dark:text-green-300 bg-green-100/50 dark:bg-white/10{% else %}text-cosmic-700 dark:text-white/70 hover:bg-cosmic-100/50 dark:hover:bg-white/5 hover:text-cosmic-800 dark:hover:text-white{% endif %}">作曲管理</a>
+            {% endwith %}
         </div>
     </div>
 </nav>

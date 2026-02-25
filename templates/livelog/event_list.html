@@ -1,31 +1,31 @@
 {% extends "base.html" %}
 
-{% block title %}ライブ記録 - MusicApp{% endblock %}
+{% block title %}ライブ記録 - 残音{% endblock %}
 
 {% block content %}
 <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold">ライブ記録</h1>
+    <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow">ライブ記録</h1>
     <div class="flex gap-3">
-        <a href="{% url 'livelog:expense_list' %}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">費用一覧</a>
-        <a href="{% url 'livelog:event_create' %}" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 text-sm font-medium">ライブを追加</a>
+        <a href="{% url 'livelog:expense_list' %}" class="text-sm text-cosmic-500 dark:text-cosmic-300 hover:text-cosmic-400 dark:hover:text-cosmic-200 transition-colors">費用一覧</a>
+        <a href="{% url 'livelog:event_create' %}" class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-4 py-2 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300 text-sm">ライブを追加</a>
     </div>
 </div>
 
 {% if upcoming %}
-<h2 class="text-lg font-bold mb-3">予定のライブ</h2>
+<h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-3">予定のライブ</h2>
 <div class="grid gap-4 mb-8">
     {% for event in upcoming %}
-    <a href="{% url 'livelog:event_detail' event.pk %}" class="block bg-white dark:bg-gray-800 rounded-xl p-5 border border-primary-200 dark:border-primary-800 hover:shadow-lg transition">
+    <a href="{% url 'livelog:event_detail' event.pk %}" class="block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-supernova/20 dark:border-supernova/20 hover:shadow-glow transition-all duration-300">
         <div class="flex justify-between items-start">
             <div>
-                <div class="text-lg font-bold">{{ event.artist }}</div>
-                {% if event.title %}<div class="text-sm text-gray-500 dark:text-gray-400">{{ event.title }}</div>{% endif %}
-                <div class="flex gap-3 mt-2 text-sm text-gray-500 dark:text-gray-400">
+                <div class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90">{{ event.artist }}</div>
+                {% if event.title %}<div class="text-sm text-cosmic-600/60 dark:text-white/50">{{ event.title }}</div>{% endif %}
+                <div class="flex gap-3 mt-2 text-sm text-cosmic-600/60 dark:text-white/50">
                     <span>{{ event.date|date:"Y/m/d" }}</span>
                     {% if event.venue %}<span>{{ event.venue }}</span>{% endif %}
                 </div>
             </div>
-            <div class="text-primary-600 dark:text-primary-400 font-bold" x-data x-text="(() => { const d = Math.ceil((new Date('{{ event.date|date:'Y-m-d' }}') - new Date()) / 86400000); return d === 0 ? '今日！' : 'あと' + d + '日'; })()"></div>
+            <div class="text-supernova dark:text-supernova font-mono font-bold text-glow" x-data x-text="(() => { const d = Math.ceil((new Date('{{ event.date|date:'Y-m-d' }}') - new Date()) / 86400000); return d === 0 ? '今日！' : 'あと' + d + '日'; })()"></div>
         </div>
     </a>
     {% endfor %}
@@ -33,16 +33,16 @@
 {% endif %}
 
 {% if past %}
-<h2 class="text-lg font-bold mb-3">過去のライブ</h2>
+<h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-3">過去のライブ</h2>
 <div class="grid gap-3">
     {% for event in past %}
-    <a href="{% url 'livelog:event_detail' event.pk %}" class="block bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700 hover:shadow-md transition">
+    <a href="{% url 'livelog:event_detail' event.pk %}" class="block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-cosmic-200/30 dark:border-white/10 hover:shadow-glow-sm transition-all duration-300">
         <div class="flex justify-between items-center">
             <div>
                 <span class="font-bold">{{ event.artist }}</span>
-                {% if event.title %}<span class="text-sm text-gray-500 dark:text-gray-400 ml-2">{{ event.title }}</span>{% endif %}
+                {% if event.title %}<span class="text-sm text-cosmic-600/60 dark:text-white/50 ml-2">{{ event.title }}</span>{% endif %}
             </div>
-            <div class="text-sm text-gray-500 dark:text-gray-400">
+            <div class="text-sm text-cosmic-600/60 dark:text-white/50">
                 {{ event.date|date:"Y/m/d" }}
                 {% if event.venue %} @ {{ event.venue }}{% endif %}
             </div>
@@ -53,7 +53,8 @@
 {% endif %}
 
 {% if not upcoming and not past %}
-<div class="text-center py-12 text-gray-500 dark:text-gray-400">
+<div class="text-center py-12 text-cosmic-600/50 dark:text-white/40">
+    <div class="w-20 h-20 mx-auto mb-4 opacity-60">{% include "partials/baku/_baku_sleeping.html" %}</div>
     ライブ記録がまだありません
 </div>
 {% endif %}

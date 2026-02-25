@@ -22,7 +22,7 @@ INSTALLED_APPS = [
     # Local apps
     'accounts',
     'dashboard',
-    'jpop_chord',
+    'music_theory',
     'guitarlog',
     'livelog',
     'songdiary',

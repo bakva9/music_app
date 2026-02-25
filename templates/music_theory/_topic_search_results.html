@@ -1,0 +1,24 @@
+{% if topics %}
+<div class="grid gap-3">
+    {% for topic in topics %}
+    <a href="{% url 'music_theory:topic_detail' topic.slug %}"
+       class="block bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-cosmic-200/30 dark:border-white/10 hover:shadow-glow transition-all duration-300">
+        <div class="flex justify-between items-start">
+            <div class="flex-1 min-w-0">
+                <div class="font-bold text-white/90">{{ topic.title }}</div>
+                <p class="text-sm text-white/50 mt-1 line-clamp-2">{{ topic.summary|truncatechars:120 }}</p>
+            </div>
+            <div class="flex items-center gap-2 ml-3 shrink-0">
+                <span class="bg-cosmic-100/50 dark:bg-white/10 px-2 py-1 rounded text-xs text-white/60">{{ topic.get_category_display }}</span>
+                <span class="text-xs text-white/40">{{ topic.get_difficulty_display }}</span>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-12 text-cosmic-600/50 dark:text-white/40">
+    <div class="w-20 h-20 mx-auto mb-4 opacity-60">{% include "partials/baku/_baku_sleeping.html" %}</div>
+    {% if query %}「{{ query }}」に一致するトピックが見つかりません{% else %}トピックが登録されていません{% endif %}
+</div>
+{% endif %}

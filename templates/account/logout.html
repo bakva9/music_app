@@ -1,15 +1,20 @@
 {% extends "base.html" %}
 
-{% block title %}ログアウト - MusicApp{% endblock %}
+{% block title %}ログアウト - 残音{% endblock %}
 
 {% block content %}
 <div class="max-w-md mx-auto">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-8 border border-gray-200 dark:border-gray-700 text-center">
-        <h1 class="text-2xl font-bold mb-4">ログアウト</h1>
-        <p class="text-gray-600 dark:text-gray-400 mb-6">ログアウトしますか？</p>
+    <div class="text-center mb-6">
+        <div class="w-16 h-16 mx-auto mb-3 animate-float">
+            {% include "partials/baku/_baku_sleeping.html" %}
+        </div>
+    </div>
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-lg rounded-2xl shadow-glow-sm p-8 border border-cosmic-200/30 dark:border-white/10 text-center">
+        <h1 class="font-display text-2xl font-bold mb-4 text-cosmic-800 dark:text-white text-glow">ログアウト</h1>
+        <p class="text-cosmic-600/60 dark:text-white/50 mb-6 font-display">ログアウトしますか？</p>
         <form method="POST" action="{% url 'account_logout' %}">
             {% csrf_token %}
-            <button type="submit" class="bg-red-600 text-white py-2 px-6 rounded-lg hover:bg-red-700 font-medium">
+            <button type="submit" class="bg-gradient-to-r from-comet to-red-400 hover:from-red-400 hover:to-comet text-white py-3 px-8 rounded-xl font-display font-bold shadow-[0_0_15px_rgba(255,107,107,0.2)] hover:shadow-[0_0_25px_rgba(255,107,107,0.3)] transition-all duration-300 hover:scale-[1.02]">
                 ログアウト
             </button>
         </form>

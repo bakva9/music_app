@@ -7,44 +7,44 @@
     <!-- Header -->
     <div class="flex justify-between items-start mb-6">
         <div>
-            <h1 class="text-2xl font-bold">{{ project.title }}</h1>
+            <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow">{{ project.title }}</h1>
             <div class="flex items-center gap-3 mt-2">
                 <span class="text-sm px-3 py-1 rounded-full
-                    {% if project.status == 'done' %}bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300
-                    {% elif project.status == 'idea' %}bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300
-                    {% else %}bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300{% endif %}">
+                    {% if project.status == 'done' %}bg-aurora/10 text-green-600 dark:text-aurora/80
+                    {% elif project.status == 'idea' %}bg-cosmic-100/50 dark:bg-white/10 text-cosmic-600 dark:text-white/60
+                    {% else %}bg-nebula-400/15 text-nebula-600 dark:text-nebula-300{% endif %}">
                     {{ project.get_status_display }}
                 </span>
-                {% if project.key %}<span class="text-sm text-gray-500">Key: {{ project.key }}</span>{% endif %}
-                {% if project.bpm %}<span class="text-sm text-gray-500">{{ project.bpm }} BPM</span>{% endif %}
+                {% if project.key %}<span class="text-sm text-cosmic-600/60 dark:text-white/50">Key: {{ project.key }}</span>{% endif %}
+                {% if project.bpm %}<span class="text-sm text-cosmic-600/60 dark:text-white/50">{{ project.bpm }} BPM</span>{% endif %}
             </div>
             {% if project.tag_list %}
             <div class="flex flex-wrap gap-1 mt-2">
                 {% for tag in project.tag_list %}
-                <span class="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded">#{{ tag }}</span>
+                <span class="text-xs bg-cosmic-100/50 dark:bg-white/10 px-2 py-0.5 rounded">#{{ tag }}</span>
                 {% endfor %}
             </div>
             {% endif %}
             {% if project.description %}
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">{{ project.description }}</p>
+            <p class="text-sm text-cosmic-600/60 dark:text-white/50 mt-2">{{ project.description }}</p>
             {% endif %}
         </div>
         <div class="flex gap-2">
-            <a href="{% url 'songdiary:project_edit' project.pk %}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">編集</a>
-            <a href="{% url 'songdiary:project_delete' project.pk %}" class="text-sm text-red-500 hover:underline">削除</a>
+            <a href="{% url 'songdiary:project_edit' project.pk %}" class="text-sm text-cosmic-500 dark:text-cosmic-300 hover:text-cosmic-400 dark:hover:text-cosmic-200 transition-colors">編集</a>
+            <a href="{% url 'songdiary:project_delete' project.pk %}" class="text-sm text-comet dark:text-comet/80 hover:underline">削除</a>
         </div>
     </div>
 
     <!-- Add Memo Section -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 mb-6">
-        <h2 class="text-lg font-bold mb-3">メモを追加</h2>
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 mb-6">
+        <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-3">メモを追加</h2>
         <div class="space-y-3">
             <!-- Text Memo -->
             <form hx-post="{% url 'songdiary:add_text_memo' project.pk %}" hx-target="#timeline" hx-swap="innerHTML" class="flex gap-2">
                 {% csrf_token %}
                 <input type="text" name="text_content" placeholder="テキストメモを入力..."
-                       class="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm" required>
-                <button type="submit" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 text-sm">追加</button>
+                       class="flex-1 rounded-xl border border-cosmic-200/30 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur-md px-3 py-2 text-sm focus:ring-2 focus:ring-cosmic-400/50 focus:border-cosmic-400/50" required>
+                <button type="submit" class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-4 py-2 rounded-xl text-sm font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300">追加</button>
             </form>
 
             <div class="flex gap-2">
@@ -52,7 +52,7 @@
                 <form hx-post="{% url 'songdiary:add_photo_memo' project.pk %}" hx-target="#timeline" hx-swap="innerHTML"
                       hx-encoding="multipart/form-data" class="flex-1">
                     {% csrf_token %}
-                    <label class="flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm">
+                    <label class="flex items-center justify-center gap-2 py-2 px-4 rounded-xl border border-cosmic-200/30 dark:border-white/10 hover:bg-cosmic-100/50 dark:hover:bg-white/10 cursor-pointer text-sm transition-all duration-300">
                         <span>📷 写真</span>
                         <input type="file" name="photo_file" accept="image/*" class="hidden"
                                onchange="this.closest('form').requestSubmit()">
@@ -61,25 +61,25 @@
 
                 <!-- Audio Recording -->
                 <button @click="toggleRecording()" type="button"
-                        :class="recording ? 'bg-red-500 text-white' : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'"
-                        class="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm">
+                        :class="recording ? 'bg-gradient-to-r from-comet to-red-400 text-white' : 'border border-cosmic-200/30 dark:border-white/10 hover:bg-cosmic-100/50 dark:hover:bg-white/10'"
+                        class="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-sm transition-all duration-300">
                     <span x-text="recording ? '⏹ 録音停止' : '🎤 音声録音'"></span>
                 </button>
             </div>
-            <div x-show="recordingTime > 0 && recording" class="text-center text-sm text-red-500">
+            <div x-show="recordingTime > 0 && recording" class="text-center text-sm text-comet dark:text-comet/80">
                 録音中... <span x-text="Math.floor(recordingTime / 60) + ':' + String(recordingTime % 60).padStart(2, '0')"></span>
             </div>
         </div>
     </div>
 
     <!-- Timeline -->
-    <h2 class="text-lg font-bold mb-3">タイムライン</h2>
+    <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-3">タイムライン</h2>
     <div id="timeline">
         {% include "songdiary/_timeline.html" %}
     </div>
 
     <div class="mt-6">
-        <a href="{% url 'songdiary:project_list' %}" class="text-primary-600 dark:text-primary-400 hover:underline">&larr; プロジェクト一覧に戻る</a>
+        <a href="{% url 'songdiary:project_list' %}" class="text-cosmic-500 dark:text-cosmic-300 hover:text-cosmic-400 dark:hover:text-cosmic-200 transition-colors">&larr; プロジェクト一覧に戻る</a>
     </div>
 </div>
 {% endblock %}

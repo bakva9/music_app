@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}感想 - MusicApp{% endblock %}
+{% block title %}感想 - 残音{% endblock %}
 
 {% block content %}
 <div class="max-w-lg mx-auto">
-    <h1 class="text-2xl font-bold mb-6">感想を書く</h1>
-    <form method="POST" class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 space-y-4">
+    <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow mb-6">感想を書く</h1>
+    <form method="POST" class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10 space-y-4">
         {% csrf_token %}
         <div x-data="{ rating: {{ form.initial.rating|default:'3' }} }">
             <label class="block text-sm font-medium mb-2">評価</label>
             <div class="flex gap-2">
                 <template x-for="i in [1,2,3,4,5]">
                     <button type="button" @click="rating = i"
-                            :class="i <= rating ? 'text-yellow-500 text-3xl' : 'text-gray-300 dark:text-gray-600 text-3xl'"
+                            :class="i <= rating ? 'text-stardust text-3xl' : 'text-gray-300 dark:text-gray-600 text-3xl'"
                             x-text="i <= rating ? '★' : '☆'"></button>
                 </template>
                 <input type="hidden" name="rating" :value="rating">
@@ -21,11 +21,11 @@
         <div>
             <label for="id_text" class="block text-sm font-medium mb-1">感想</label>
             {{ form.text }}
-            {% if form.text.errors %}<p class="text-red-500 text-sm mt-1">{{ form.text.errors.0 }}</p>{% endif %}
+            {% if form.text.errors %}<p class="text-comet dark:text-comet/80 text-sm mt-1">{{ form.text.errors.0 }}</p>{% endif %}
         </div>
         <div class="flex gap-3">
-            <button type="submit" class="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 font-medium">保存</button>
-            <a href="{% url 'livelog:event_detail' event.pk %}" class="text-gray-500 dark:text-gray-400 px-6 py-2 hover:underline">キャンセル</a>
+            <button type="submit" class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-6 py-2 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300">保存</button>
+            <a href="{% url 'livelog:event_detail' event.pk %}" class="text-cosmic-600/60 dark:text-white/50 px-6 py-2 hover:underline">キャンセル</a>
         </div>
     </form>
 </div>

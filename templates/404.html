@@ -4,9 +4,11 @@
 
 {% block content %}
 <div class="text-center py-20">
-    <div class="text-6xl mb-4">🎵</div>
-    <h1 class="text-3xl font-bold mb-2">404</h1>
-    <p class="text-gray-500 dark:text-gray-400 mb-6">お探しのページが見つかりません</p>
-    <a href="{% url 'dashboard:home' %}" class="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 font-medium">ホームに戻る</a>
+    <div class="w-28 h-28 mx-auto mb-6 animate-float">
+        {% include "partials/baku/_baku_sleeping.html" %}
+    </div>
+    <h1 class="font-display text-5xl font-bold mb-3 text-cosmic-800 dark:text-white text-glow">404</h1>
+    <p class="text-cosmic-600/60 dark:text-white/50 mb-8 font-display text-lg">お探しのページが見つかりません</p>
+    <a href="{% url 'dashboard:home' %}" class="inline-block bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-8 py-3 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300 hover:scale-105">ホームに戻る</a>
 </div>
 {% endblock %}

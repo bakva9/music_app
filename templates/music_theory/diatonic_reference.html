@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}ダイアトニックコード - 残音{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="font-display text-2xl font-bold text-white text-glow mb-4">音楽理論</h1>
+    {% include "music_theory/_section_nav.html" with active_section="diatonic" %}
+</div>
+
+<div x-data="diatonicApp()">
+    <!-- Key Selector -->
+    <div class="mb-6">
+        <div class="text-sm text-white/50 mb-2">キーを選択</div>
+        <div class="flex flex-wrap gap-1.5">
+            <template x-for="(label, i) in keyLabels" :key="i">
+                <button @click="selectedKey = i"
+                        :class="selectedKey === i ? 'bg-cosmic-500/30 text-cosmic-300 border-cosmic-400/30' : 'text-white/50 hover:text-white/80 hover:bg-white/5 border-white/10'"
+                        class="w-10 h-10 rounded-lg text-sm font-mono font-medium border transition-all duration-200"
+                        x-text="label"></button>
+            </template>
+        </div>
+    </div>
+
+    <!-- Diatonic Chord Table -->
+    <div class="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden mb-6">
+        <div class="px-4 py-3 border-b border-white/10">
+            <h2 class="font-display font-bold text-white/90">ダイアトニックコード</h2>
+            <p class="text-xs text-white/40 mt-0.5"><span x-text="keyLabels[selectedKey]">C</span> メジャーキー</p>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-white/10 text-white/50">
+                        <th class="px-4 py-2 text-left">度数</th>
+                        <th class="px-4 py-2 text-left">三和音</th>
+                        <th class="px-4 py-2 text-left">四和音</th>
+                        <th class="px-4 py-2 text-left">機能</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="(chord, i) in getDiatonicChords()" :key="i">
+                        <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                            <td class="px-4 py-2.5 font-mono text-white/60" x-text="chord.degree"></td>
+                            <td class="px-4 py-2.5 font-mono font-medium text-white/90" x-text="chord.triad"></td>
+                            <td class="px-4 py-2.5 font-mono text-white/70" x-text="chord.seventh"></td>
+                            <td class="px-4 py-2.5">
+                                <span class="px-2 py-0.5 rounded text-xs font-medium"
+                                      :class="{
+                                          'bg-cosmic-500/20 text-cosmic-300': chord.func === 'T',
+                                          'bg-nebula-500/20 text-nebula-300': chord.func === 'SD',
+                                          'bg-blue-500/20 text-blue-300': chord.func === 'D',
+                                      }"
+                                      x-text="chord.funcLabel">
+                                </span>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Substitute Chords -->
+    <div class="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden mb-6">
+        <div class="px-4 py-3 border-b border-white/10">
+            <h2 class="font-display font-bold text-white/90">代理コード</h2>
+            <p class="text-xs text-white/40 mt-0.5">同じ機能を持つコード同士は代理として使用可能</p>
+        </div>
+        <div class="p-4 space-y-4">
+            <template x-for="group in getSubstituteChords()" :key="group.func">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <span class="text-sm font-medium shrink-0 w-32"
+                          :class="{
+                              'text-cosmic-300': group.color === 'cosmic',
+                              'text-nebula-300': group.color === 'nebula',
+                              'text-blue-300': group.color === 'blue',
+                          }"
+                          x-text="group.func"></span>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <template x-for="(chord, i) in group.chords" :key="i">
+                            <div class="flex items-center gap-2">
+                                <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 font-mono text-sm text-white/80" x-text="chord"></span>
+                                <span x-show="i < group.chords.length - 1" class="text-white/30">↔</span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- Secondary Dominants -->
+    <div class="bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 overflow-hidden">
+        <div class="px-4 py-3 border-b border-white/10">
+            <h2 class="font-display font-bold text-white/90">セカンダリードミナント</h2>
+            <p class="text-xs text-white/40 mt-0.5">各ダイアトニックコードに対するドミナントコード</p>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-white/10 text-white/50">
+                        <th class="px-4 py-2 text-left">表記</th>
+                        <th class="px-4 py-2 text-left">コード</th>
+                        <th class="px-4 py-2 text-center">→</th>
+                        <th class="px-4 py-2 text-left">解決先</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="sd in getSecondaryDominants()" :key="sd.label">
+                        <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                            <td class="px-4 py-2.5 font-mono text-white/60" x-text="sd.label"></td>
+                            <td class="px-4 py-2.5 font-mono font-medium text-white/90" x-text="sd.chord"></td>
+                            <td class="px-4 py-2.5 text-center text-white/30">→</td>
+                            <td class="px-4 py-2.5 font-mono text-white/70" x-text="sd.target"></td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function diatonicApp() {
+    return {
+        selectedKey: 0,
+        keyLabels: ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'],
+        scaleIntervals: [0, 2, 4, 5, 7, 9, 11],
+        triadQualities: ['', 'm', 'm', '', '', 'm', 'dim'],
+        seventhQualities: ['M7', 'm7', 'm7', 'M7', '7', 'm7', 'm7(♭5)'],
+        degreeNames: ['I', 'IIm', 'IIIm', 'IV', 'V', 'VIm', 'VIIdim'],
+        functions: ['T', 'SD', 'T', 'SD', 'D', 'T', 'D'],
+        functionLabels: ['T (トニック)', 'SD (サブドミナント)', 'T (トニック代理)', 'SD (サブドミナント)', 'D (ドミナント)', 'T (トニック代理)', 'D (ドミナント代理)'],
+
+        getNoteName(semitone) {
+            return this.keyLabels[(this.selectedKey + semitone) % 12];
+        },
+
+        getDiatonicChords() {
+            return this.scaleIntervals.map((interval, i) => ({
+                degree: this.degreeNames[i],
+                triad: this.getNoteName(interval) + this.triadQualities[i],
+                seventh: this.getNoteName(interval) + this.seventhQualities[i],
+                func: this.functions[i],
+                funcLabel: this.functionLabels[i],
+            }));
+        },
+
+        getSubstituteChords() {
+            return [
+                {
+                    func: 'T (トニック)',
+                    color: 'cosmic',
+                    chords: [
+                        this.getNoteName(this.scaleIntervals[0]),
+                        this.getNoteName(this.scaleIntervals[2]) + 'm',
+                        this.getNoteName(this.scaleIntervals[5]) + 'm',
+                    ]
+                },
+                {
+                    func: 'SD (サブドミナント)',
+                    color: 'nebula',
+                    chords: [
+                        this.getNoteName(this.scaleIntervals[1]) + 'm',
+                        this.getNoteName(this.scaleIntervals[3]),
+                    ]
+                },
+                {
+                    func: 'D (ドミナント)',
+                    color: 'blue',
+                    chords: [
+                        this.getNoteName(this.scaleIntervals[4]),
+                        this.getNoteName(this.scaleIntervals[6]) + 'dim',
+                    ]
+                },
+            ];
+        },
+
+        getSecondaryDominants() {
+            const targets = [1, 2, 3, 4, 5];
+            return targets.map(t => {
+                const targetSemitone = this.scaleIntervals[t];
+                const domSemitone = (targetSemitone + 7) % 12;
+                return {
+                    label: 'V/' + this.degreeNames[t],
+                    chord: this.keyLabels[(this.selectedKey + domSemitone) % 12] + '7',
+                    target: this.getNoteName(targetSemitone) + this.triadQualities[t],
+                };
+            });
+        },
+    }
+}
+</script>
+{% endblock %}

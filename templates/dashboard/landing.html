@@ -1,0 +1,620 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>残音 | Nokorine</title>
+    <meta name="description" content="残音 - 演奏・練習・ライブ・作曲、すべてをひとつに。音楽体験を記録する統合アプリ。">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cosmic: { 50: '#fef2f5', 100: '#fde4eb', 200: '#f8c4d0', 300: '#f2a0b4', 400: '#e06888', 500: '#c73058', 600: '#a82044', 700: '#8b1a38', 800: '#70152e', 900: '#4a0e1e', 950: '#2a0810' },
+                        nebula: { 50: '#fff8f0', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74', 400: '#fb923c', 500: '#f07020', 600: '#e05a10', 700: '#c2410c', 800: '#9a3412', 900: '#7c2d12' },
+                        stardust: '#ffd700',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Zen Maru Gothic', 'system-ui', 'sans-serif'],
+                        display: ['Zen Maru Gothic', 'Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    boxShadow: {
+                        'glow': '0 0 20px rgba(199,48,88,0.2)',
+                        'glow-lg': '0 0 40px rgba(199,48,88,0.25)',
+                        'glow-teal': '0 0 20px rgba(240,112,32,0.2)',
+                        'glow-orange': '0 0 20px rgba(255,159,67,0.2)',
+                        'glow-green': '0 0 20px rgba(0,255,136,0.2)',
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+
+        /* === Cosmic Background with animated nebula === */
+        .cosmic-landing {
+            background:
+                radial-gradient(ellipse at 15% 50%, rgba(199,48,88,0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 20%, rgba(240,112,32,0.10) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 90%, rgba(255,107,107,0.05) 0%, transparent 40%),
+                radial-gradient(ellipse at 60% 40%, rgba(139,26,56,0.08) 0%, transparent 35%),
+                linear-gradient(180deg, #2a0810 0%, #4a0e1e 25%, #1a0a12 55%, #150810 80%, #2a0810 100%);
+            background-attachment: fixed;
+        }
+
+        /* === Animated Nebula Overlay === */
+        .nebula-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.4;
+        }
+        .nebula-overlay::before {
+            content: '';
+            position: absolute;
+            inset: -50%;
+            background:
+                radial-gradient(ellipse at 30% 40%, rgba(199,48,88,0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 60%, rgba(240,112,32,0.08) 0%, transparent 50%);
+            animation: nebula-drift 30s ease-in-out infinite alternate;
+        }
+        @keyframes nebula-drift {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(3%, -2%) rotate(1deg); }
+            100% { transform: translate(-2%, 3%) rotate(-1deg); }
+        }
+
+        /* === Starfield === */
+        .starfield {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .starfield .stars-sm {
+            position: absolute;
+            width: 1px; height: 1px;
+            border-radius: 50%;
+            box-shadow:
+                24px 89px #fff, 150px 320px #fff, 290px 50px #fff, 410px 180px #fff, 530px 400px #fff,
+                680px 120px #fff, 790px 350px #fff, 910px 60px #fff, 1050px 290px #fff, 1180px 440px #fff,
+                70px 510px #fff, 200px 680px #fff, 340px 570px #fff, 480px 730px #fff, 610px 600px #fff,
+                750px 760px #fff, 890px 520px #fff, 1020px 700px #fff, 1150px 580px #fff, 1280px 670px #fff,
+                45px 890px #fff, 170px 1020px #fff, 310px 860px #fff, 460px 980px #fff, 590px 1100px #fff,
+                720px 910px #fff, 860px 1060px #fff, 1000px 870px #fff, 1130px 1010px #fff, 1270px 930px #fff,
+                100px 1200px #fff, 240px 1350px #fff, 380px 1180px #fff, 520px 1320px #fff, 660px 1250px #fff,
+                800px 1400px #fff, 940px 1160px #fff, 1080px 1300px #fff, 1220px 1200px #fff, 1350px 1380px #fff,
+                55px 1500px #fff, 210px 1600px #fff, 350px 1540px #fff, 500px 1680px #fff, 640px 1570px #fff,
+                780px 1650px #fff, 920px 1500px #fff, 1040px 1600px #fff, 1190px 1540px #fff, 1320px 1700px #fff;
+            animation: starfield-drift 200s linear infinite;
+            opacity: 0.6;
+        }
+        .starfield .stars-md {
+            position: absolute;
+            width: 2px; height: 2px;
+            border-radius: 50%;
+            box-shadow:
+                80px 150px rgba(255,255,255,0.9), 260px 400px rgba(255,255,255,0.8), 440px 100px rgba(255,255,255,0.9),
+                620px 300px rgba(255,255,255,0.85), 800px 500px rgba(255,255,255,0.9), 980px 200px rgba(255,255,255,0.8),
+                1160px 450px rgba(255,255,255,0.9), 130px 600px rgba(255,255,255,0.8), 350px 750px rgba(255,255,255,0.9),
+                570px 650px rgba(255,255,255,0.85), 760px 850px rgba(255,255,255,0.9), 950px 720px rgba(255,255,255,0.8),
+                1120px 800px rgba(255,255,255,0.9), 60px 1000px rgba(255,255,255,0.8), 280px 1150px rgba(255,255,255,0.9),
+                500px 1050px rgba(255,255,255,0.85), 710px 1200px rgba(255,255,255,0.9), 930px 1100px rgba(255,255,255,0.8);
+            animation: starfield-drift 260s linear infinite;
+            opacity: 0.5;
+        }
+        .starfield .stars-lg {
+            position: absolute;
+            width: 3px; height: 3px;
+            border-radius: 50%;
+            box-shadow:
+                180px 250px rgba(224,104,136,0.8), 540px 100px rgba(240,112,32,0.7), 900px 380px rgba(255,215,0,0.6),
+                1200px 150px rgba(224,104,136,0.7), 360px 500px rgba(240,112,32,0.8), 720px 680px rgba(255,215,0,0.7),
+                1050px 550px rgba(224,104,136,0.6), 100px 800px rgba(240,112,32,0.7), 450px 950px rgba(255,215,0,0.8),
+                800px 1050px rgba(224,104,136,0.7), 1150px 900px rgba(240,112,32,0.6);
+            animation: twinkle 4s ease-in-out infinite alternate, starfield-drift 320s linear infinite;
+        }
+
+        /* === Shooting Stars (enhanced) === */
+        .shooting-star {
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), rgba(255,215,0,0.3));
+            border-radius: 100px;
+            filter: blur(0.5px);
+        }
+        .shooting-star-1 { top: 15%; left: 10%; animation: shooting-star 4s ease-in 1s infinite; }
+        .shooting-star-2 { top: 35%; left: 50%; animation: shooting-star 5s ease-in 3.5s infinite; }
+        .shooting-star-3 { top: 55%; left: 25%; animation: shooting-star 6s ease-in 6s infinite; }
+        .shooting-star-4 { top: 70%; left: 70%; animation: shooting-star 7s ease-in 8s infinite; }
+
+        /* === Base Keyframes === */
+        @keyframes starfield-drift { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+        @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; width: 0; }
+            3% { opacity: 1; width: 100px; }
+            60% { opacity: 0.8; }
+            100% { transform: translateX(600px) translateY(600px) rotate(45deg); opacity: 0; width: 0; }
+        }
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes orbit {
+            from { transform: rotate(0deg) translateX(var(--orbit-radius, 120px)) rotate(0deg); }
+            to { transform: rotate(360deg) translateX(var(--orbit-radius, 120px)) rotate(-360deg); }
+        }
+
+        /* ============================================ */
+        /* === HERO ANIMATION SEQUENCE               === */
+        /* ============================================ */
+
+        /* Phase 1: Logo entrance (0.3s → 1.8s) */
+        .hero-logo-entrance {
+            opacity: 0;
+            animation: logo-entrance 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+        }
+        @keyframes logo-entrance {
+            0%   { opacity: 0; transform: scale(0.3) rotate(-10deg); filter: blur(20px); }
+            40%  { opacity: 1; filter: blur(0); }
+            75%  { transform: scale(1.08) rotate(2deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0); }
+        }
+
+        /* Logo float (starts after entrance) */
+        .hero-logo-float {
+            animation: float 4s ease-in-out 2s infinite;
+        }
+
+        /* Logo ambient glow pulse (starts after entrance) */
+        .hero-logo-glow {
+            animation: logo-ambient-glow 3s ease-in-out 2s infinite;
+        }
+        @keyframes logo-ambient-glow {
+            0%, 100% { filter: drop-shadow(0 0 15px rgba(240,112,32,0.3)) drop-shadow(0 0 30px rgba(199,48,88,0.1)); }
+            50%      { filter: drop-shadow(0 0 40px rgba(240,112,32,0.5)) drop-shadow(0 0 80px rgba(199,48,88,0.2)); }
+        }
+
+        /* Light burst radiating from behind logo */
+        .hero-burst {
+            opacity: 0;
+            animation: light-burst 2.5s ease-out 0.5s forwards;
+        }
+        @keyframes light-burst {
+            0%   { opacity: 0; transform: scale(0.2); }
+            25%  { opacity: 0.6; }
+            100% { opacity: 0; transform: scale(2.5); }
+        }
+
+        /* Ring pulse effect around logo */
+        .hero-ring-pulse {
+            opacity: 0;
+            animation: ring-pulse 3s ease-out 1.5s infinite;
+        }
+        @keyframes ring-pulse {
+            0%   { opacity: 0.5; transform: scale(1); }
+            100% { opacity: 0; transform: scale(2.2); }
+        }
+
+        /* Phase 2: Title character wrappers (handles reveal) */
+        .hero-char-wrap {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(50px) scale(0.7);
+        }
+        .hero-char-wrap-1 { animation: char-reveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) 1.3s forwards; }
+        .hero-char-wrap-2 { animation: char-reveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) 1.6s forwards; }
+        @keyframes char-reveal {
+            0%   { opacity: 0; transform: translateY(50px) scale(0.7); }
+            60%  { opacity: 1; transform: translateY(-8px) scale(1.05); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* Animated gradient text (separate from reveal animation) */
+        .text-gradient-warm {
+            background: linear-gradient(135deg, #f2a0b4 0%, #fb923c 30%, #ffd700 60%, #f07020 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 6s ease-in-out 2.5s infinite;
+        }
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Title glow (via filter on wrapper, since text-shadow won't work with transparent fill) */
+        .title-glow {
+            filter: drop-shadow(0 0 30px rgba(199,48,88,0.35)) drop-shadow(0 0 60px rgba(240,112,32,0.15));
+        }
+
+        /* Phase 3: Romaji with letter spacing animation (2.1s) */
+        .hero-romaji {
+            opacity: 0;
+            animation: romaji-reveal 1s cubic-bezier(0.22, 1, 0.36, 1) 2.1s forwards;
+        }
+        @keyframes romaji-reveal {
+            from { opacity: 0; letter-spacing: 0.6em; }
+            to { opacity: 1; letter-spacing: 0.3em; }
+        }
+
+        /* Phase 4: Tagline (2.5s) */
+        .hero-tagline { opacity: 0; animation: fade-in-up 0.8s ease-out 2.5s forwards; }
+
+        /* Phase 5: CTA buttons (3.0s) */
+        .hero-cta { opacity: 0; animation: fade-in-up 1s ease-out 3s forwards; }
+
+        /* Phase 6: Scroll indicator (3.5s) */
+        .hero-scroll { opacity: 0; animation: fade-in-up 1s ease-out 3.5s forwards; }
+
+        /* === CTA Button shimmer effect === */
+        .btn-shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-shimmer::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -60%;
+            width: 40%;
+            height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transform: rotate(25deg);
+            animation: shimmer 4s ease-in-out 3.5s infinite;
+        }
+        @keyframes shimmer {
+            0%, 100% { left: -60%; }
+            50% { left: 120%; }
+        }
+
+        /* === Scroll indicator === */
+        @keyframes scroll-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+        .animate-scroll-bounce { animation: scroll-bounce 2s ease-in-out infinite; }
+
+        /* === Orbiting particles with varying sizes === */
+        .orbit-particle {
+            position: absolute;
+            border-radius: 50%;
+            top: 50%; left: 50%;
+        }
+        .orbit-1 {
+            width: 5px; height: 5px; margin: -2.5px;
+            background: rgba(224,104,136,0.7);
+            box-shadow: 0 0 8px rgba(224,104,136,0.4);
+            --orbit-radius: 130px;
+            animation: orbit 12s linear infinite;
+        }
+        .orbit-2 {
+            width: 3px; height: 3px; margin: -1.5px;
+            background: rgba(240,112,32,0.6);
+            box-shadow: 0 0 6px rgba(240,112,32,0.3);
+            --orbit-radius: 100px;
+            animation: orbit 18s linear infinite reverse;
+        }
+        .orbit-3 {
+            width: 4px; height: 4px; margin: -2px;
+            background: rgba(255,215,0,0.5);
+            box-shadow: 0 0 10px rgba(255,215,0,0.3);
+            --orbit-radius: 155px;
+            animation: orbit 15s linear 3s infinite;
+        }
+        .orbit-4 {
+            width: 2px; height: 2px; margin: -1px;
+            background: rgba(255,255,255,0.4);
+            --orbit-radius: 80px;
+            animation: orbit 10s linear 1s infinite;
+        }
+
+        /* === Feature card scroll reveal (staggered) === */
+        .reveal-card {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal-card.visible { opacity: 1; transform: translateY(0); }
+
+        /* === Feature card hover effects === */
+        .feature-card {
+            transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px) scale(1.02);
+        }
+        .feature-card .feature-icon {
+            transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.3s ease;
+        }
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(-3deg);
+        }
+
+        /* === Section Divider (sound wave) === */
+        .wave-divider {
+            width: 80px;
+            height: 24px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 3px;
+            margin: 0 auto;
+        }
+        .wave-divider span {
+            width: 3px;
+            border-radius: 2px;
+            background: linear-gradient(to top, #c73058, #f07020);
+            animation: wave-bar 1.2s ease-in-out infinite;
+        }
+        .wave-divider span:nth-child(1) { height: 8px; animation-delay: 0s; }
+        .wave-divider span:nth-child(2) { height: 16px; animation-delay: 0.1s; }
+        .wave-divider span:nth-child(3) { height: 24px; animation-delay: 0.2s; }
+        .wave-divider span:nth-child(4) { height: 16px; animation-delay: 0.3s; }
+        .wave-divider span:nth-child(5) { height: 8px; animation-delay: 0.4s; }
+        .wave-divider span:nth-child(6) { height: 20px; animation-delay: 0.15s; }
+        .wave-divider span:nth-child(7) { height: 12px; animation-delay: 0.35s; }
+        @keyframes wave-bar {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.4); }
+        }
+
+        /* === Accessibility: Reduced Motion === */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .starfield, .nebula-overlay { display: none; }
+            .hero-logo-entrance, .hero-char-wrap, .hero-romaji,
+            .hero-tagline, .hero-cta, .hero-scroll { opacity: 1; transform: none; }
+            .reveal-card { opacity: 1; transform: none; }
+        }
+    </style>
+</head>
+<body class="cosmic-landing text-white overflow-x-hidden">
+    <!-- Nebula animated overlay -->
+    <div class="nebula-overlay" aria-hidden="true"></div>
+
+    <!-- Starfield -->
+    <div class="starfield" aria-hidden="true">
+        <div class="stars-sm"></div>
+        <div class="stars-md"></div>
+        <div class="stars-lg"></div>
+        <div class="shooting-star shooting-star-1"></div>
+        <div class="shooting-star shooting-star-2"></div>
+        <div class="shooting-star shooting-star-3"></div>
+        <div class="shooting-star shooting-star-4"></div>
+    </div>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
+        <!-- Orbiting particles -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none" aria-hidden="true">
+            <div class="relative w-80 h-80">
+                <div class="orbit-particle orbit-1"></div>
+                <div class="orbit-particle orbit-2"></div>
+                <div class="orbit-particle orbit-3"></div>
+                <div class="orbit-particle orbit-4"></div>
+            </div>
+        </div>
+
+        <!-- Logo with entrance animation -->
+        <div class="hero-logo-entrance relative mb-8">
+            <!-- Light burst behind logo -->
+            <div class="hero-burst absolute inset-0 -m-24 rounded-full pointer-events-none"
+                 style="background: radial-gradient(circle, rgba(240,112,32,0.4) 0%, rgba(199,48,88,0.2) 40%, transparent 70%);" aria-hidden="true"></div>
+            <!-- Ring pulse -->
+            <div class="hero-ring-pulse absolute inset-0 -m-8 rounded-full border-2 border-cosmic-400/30 pointer-events-none" aria-hidden="true"></div>
+            <!-- Float wrapper -->
+            <div class="hero-logo-float">
+                <!-- Glow wrapper -->
+                <div class="hero-logo-glow relative">
+                    <img src="{% static 'images/logo.png' %}" alt="残音"
+                         class="w-40 h-40 md:w-52 md:h-52 rounded-full shadow-2xl relative z-10">
+                    <!-- SVG accent ring behind logo -->
+                    <div class="absolute inset-0 -m-4 z-0" aria-hidden="true">
+                        {% include "partials/_logo_svg.html" with class="w-full h-full opacity-30" id="hero-ring" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Title: 残音 (character-by-character reveal) -->
+        <h1 class="font-display text-7xl md:text-8xl lg:text-9xl font-bold text-center mb-2 leading-tight title-glow">
+            <span class="hero-char-wrap hero-char-wrap-1"><span class="text-gradient-warm">残</span></span><span class="hero-char-wrap hero-char-wrap-2"><span class="text-gradient-warm">音</span></span>
+        </h1>
+
+        <!-- Romaji with letter spacing animation -->
+        <p class="hero-romaji text-sm md:text-base text-white/40 font-mono tracking-[0.3em] uppercase mb-6">
+            Nokorine
+        </p>
+
+        <!-- Sound wave divider -->
+        <div class="hero-tagline mb-4" aria-hidden="true">
+            <div class="wave-divider">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+        </div>
+
+        <!-- Tagline -->
+        <p class="hero-tagline text-lg md:text-xl text-white/60 font-display text-center mb-12 max-w-lg">
+            現実の音がここにある
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="hero-cta flex flex-col sm:flex-row gap-4 items-center">
+            <a href="{% url 'account_signup' %}"
+               class="btn-shimmer group relative px-8 py-3.5 rounded-full font-display font-bold text-lg
+                      bg-gradient-to-r from-cosmic-500 to-nebula-400
+                      hover:from-cosmic-400 hover:to-nebula-300
+                      shadow-glow-lg hover:shadow-[0_0_60px_rgba(199,48,88,0.4)]
+                      transition-all duration-300 hover:scale-105 active:scale-[0.98]">
+                はじめる
+            </a>
+            <a href="{% url 'account_login' %}"
+               class="px-8 py-3.5 rounded-full font-display font-medium text-lg
+                      bg-white/5 backdrop-blur-md border border-white/15
+                      hover:bg-white/10 hover:border-white/30
+                      transition-all duration-300 hover:scale-105 active:scale-[0.98]">
+                ログイン
+            </a>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="hero-scroll absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30">
+            <span class="text-xs font-display tracking-widest">Scroll</span>
+            <svg class="w-5 h-5 animate-scroll-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- ===== FEATURES SECTION ===== -->
+    <section class="relative z-10 px-4 py-24 max-w-6xl mx-auto">
+        <h2 class="text-center font-display text-3xl md:text-4xl font-bold mb-4 text-white/90 reveal-card">
+            4つの機能で音楽を記録しよう
+        </h2>
+        <p class="text-center text-white/40 mb-16 font-display reveal-card">
+            演奏・練習・ライブ・作曲、すべてをひとつに
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Chord -->
+            <div class="reveal-card feature-card group bg-white/[0.03] backdrop-blur-md rounded-2xl p-6 border border-white/10
+                        hover:border-cosmic-400/30 hover:shadow-[0_8px_40px_rgba(199,48,88,0.15)]"
+                 style="transition-delay: 0ms;">
+                <div class="feature-icon w-14 h-14 rounded-xl bg-gradient-to-br from-cosmic-500/20 to-cosmic-700/10 flex items-center justify-center mb-4
+                            group-hover:from-cosmic-500/30 group-hover:to-cosmic-600/20">
+                    <span class="text-3xl">🎵</span>
+                </div>
+                <h3 class="font-display font-bold text-lg mb-2 text-white/90 group-hover:text-cosmic-300 transition-colors duration-200">コード譜</h3>
+                <p class="text-sm text-white/50 leading-relaxed">J-POPのコード譜を検索・表示。カポ変換や自動スクロールで演奏をサポート。</p>
+            </div>
+
+            <!-- GuitarLog -->
+            <div class="reveal-card feature-card group bg-white/[0.03] backdrop-blur-md rounded-2xl p-6 border border-white/10
+                        hover:border-nebula-400/30 hover:shadow-[0_8px_40px_rgba(240,112,32,0.15)]"
+                 style="transition-delay: 100ms;">
+                <div class="feature-icon w-14 h-14 rounded-xl bg-gradient-to-br from-nebula-500/20 to-nebula-700/10 flex items-center justify-center mb-4
+                            group-hover:from-nebula-500/30 group-hover:to-nebula-600/20">
+                    <span class="text-3xl">🎸</span>
+                </div>
+                <h3 class="font-display font-bold text-lg mb-2 text-white/90 group-hover:text-nebula-300 transition-colors duration-200">練習記録</h3>
+                <p class="text-sm text-white/50 leading-relaxed">ギター練習の時間を記録。ストリークで継続をモチベーションに。</p>
+            </div>
+
+            <!-- LiveLog -->
+            <div class="reveal-card feature-card group bg-white/[0.03] backdrop-blur-md rounded-2xl p-6 border border-white/10
+                        hover:border-orange-400/30 hover:shadow-[0_8px_40px_rgba(255,159,67,0.15)]"
+                 style="transition-delay: 200ms;">
+                <div class="feature-icon w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500/20 to-orange-700/10 flex items-center justify-center mb-4
+                            group-hover:from-orange-500/30 group-hover:to-orange-600/20">
+                    <span class="text-3xl">🎤</span>
+                </div>
+                <h3 class="font-display font-bold text-lg mb-2 text-white/90 group-hover:text-orange-300 transition-colors duration-200">ライブ記録</h3>
+                <p class="text-sm text-white/50 leading-relaxed">ライブの思い出を記録。セトリ・感想・費用をまとめて管理。</p>
+            </div>
+
+            <!-- SongDiary -->
+            <div class="reveal-card feature-card group bg-white/[0.03] backdrop-blur-md rounded-2xl p-6 border border-white/10
+                        hover:border-green-400/30 hover:shadow-[0_8px_40px_rgba(0,255,136,0.1)]"
+                 style="transition-delay: 300ms;">
+                <div class="feature-icon w-14 h-14 rounded-xl bg-gradient-to-br from-green-500/20 to-green-700/10 flex items-center justify-center mb-4
+                            group-hover:from-green-500/30 group-hover:to-green-600/20">
+                    <span class="text-3xl">🎹</span>
+                </div>
+                <h3 class="font-display font-bold text-lg mb-2 text-white/90 group-hover:text-green-300 transition-colors duration-200">作曲管理</h3>
+                <p class="text-sm text-white/50 leading-relaxed">作曲プロジェクトの進捗を管理。テキスト・音声・写真メモで記録。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== HOW IT WORKS SECTION ===== -->
+    <section class="relative z-10 px-4 py-20 max-w-4xl mx-auto">
+        <h2 class="text-center font-display text-2xl md:text-3xl font-bold mb-16 text-white/90 reveal-card">
+            シンプルに、はじめよう
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="reveal-card text-center" style="transition-delay: 0ms;">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl font-mono font-bold text-gradient-warm" style="background: linear-gradient(135deg, #f2a0b4 0%, #fb923c 50%, #ffd700 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">1</div>
+                <h3 class="font-display font-bold text-lg mb-2 text-white/80">アカウント作成</h3>
+                <p class="text-sm text-white/40">メールアドレスだけで無料登録</p>
+            </div>
+            <div class="reveal-card text-center" style="transition-delay: 150ms;">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl font-mono font-bold" style="background: linear-gradient(135deg, #f2a0b4 0%, #fb923c 50%, #ffd700 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">2</div>
+                <h3 class="font-display font-bold text-lg mb-2 text-white/80">機能を選ぶ</h3>
+                <p class="text-sm text-white/40">4つの機能から好きなものを使おう</p>
+            </div>
+            <div class="reveal-card text-center" style="transition-delay: 300ms;">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-3xl font-mono font-bold" style="background: linear-gradient(135deg, #f2a0b4 0%, #fb923c 50%, #ffd700 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">3</div>
+                <h3 class="font-display font-bold text-lg mb-2 text-white/80">音楽を記録</h3>
+                <p class="text-sm text-white/40">あなたの音楽体験を積み重ねよう</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== BOTTOM CTA SECTION ===== -->
+    <section class="relative z-10 px-4 py-20 text-center">
+        <div class="reveal-card max-w-xl mx-auto bg-white/[0.03] backdrop-blur-md rounded-3xl p-10 border border-white/10
+                    hover:border-white/15 transition-all duration-500">
+            <div class="w-20 h-20 mx-auto mb-4">
+                {% include "partials/baku/_baku_celebrating.html" %}
+            </div>
+            <h2 class="font-display text-2xl md:text-3xl font-bold mb-3">
+                さあ、はじめよう
+            </h2>
+            <p class="text-white/50 mb-8 font-display">無料で今すぐスタート</p>
+            <a href="{% url 'account_signup' %}"
+               class="btn-shimmer inline-block px-10 py-3.5 rounded-full font-display font-bold text-lg
+                      bg-gradient-to-r from-cosmic-500 to-nebula-400
+                      hover:from-cosmic-400 hover:to-nebula-300
+                      shadow-glow-lg hover:shadow-[0_0_60px_rgba(199,48,88,0.4)]
+                      transition-all duration-300 hover:scale-105 active:scale-[0.98]">
+                新規登録
+            </a>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="relative z-10 py-6 border-t border-white/5">
+        <div class="text-center text-sm text-white/30 flex items-center justify-center gap-2">
+            <img src="{% static 'images/logo.png' %}" alt="残音" class="w-4 h-4 rounded-full inline-block">
+            <span>&copy; 2025 残音</span>
+        </div>
+    </footer>
+
+    <!-- Scroll reveal script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const delay = entry.target.style.transitionDelay || '0ms';
+                        setTimeout(() => {
+                            entry.target.classList.add('visible');
+                        }, parseInt(delay));
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+            document.querySelectorAll('.reveal-card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

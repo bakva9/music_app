@@ -1,0 +1,17 @@
+<div class="flex gap-2 mb-6">
+    <a href="{% url 'music_theory:topic_list' %}"
+       class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200
+              {% if active_section == 'dictionary' %}bg-cosmic-500/20 text-cosmic-300 border border-cosmic-400/30{% else %}text-white/50 hover:text-white/80 hover:bg-white/5 border border-white/10{% endif %}">
+        辞典
+    </a>
+    <a href="{% url 'music_theory:progression_list' %}"
+       class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200
+              {% if active_section == 'progressions' %}bg-cosmic-500/20 text-cosmic-300 border border-cosmic-400/30{% else %}text-white/50 hover:text-white/80 hover:bg-white/5 border border-white/10{% endif %}">
+        コード進行
+    </a>
+    <a href="{% url 'music_theory:diatonic_reference' %}"
+       class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200
+              {% if active_section == 'diatonic' %}bg-cosmic-500/20 text-cosmic-300 border border-cosmic-400/30{% else %}text-white/50 hover:text-white/80 hover:bg-white/5 border border-white/10{% endif %}">
+        ダイアトニック
+    </a>
+</div>

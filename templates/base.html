@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="ja" x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }" :class="{ 'dark': darkMode }">
+<html lang="ja" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MusicApp{% endblock %}</title>
+    <title>{% block title %}残音{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -11,38 +14,333 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: { 50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e' },
-                    }
+                        primary: { 50: '#fef2f5', 100: '#fde4eb', 200: '#f8c4d0', 300: '#f2a0b4', 400: '#e06888', 500: '#c73058', 600: '#a82044', 700: '#8b1a38', 800: '#70152e', 900: '#4a0e1e', 950: '#2a0810' },
+                        cosmic: { 50: '#fef2f5', 100: '#fde4eb', 200: '#f8c4d0', 300: '#f2a0b4', 400: '#e06888', 500: '#c73058', 600: '#a82044', 700: '#8b1a38', 800: '#70152e', 900: '#4a0e1e', 950: '#2a0810' },
+                        nebula: { 50: '#fff8f0', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74', 400: '#fb923c', 500: '#f07020', 600: '#e05a10', 700: '#c2410c', 800: '#9a3412', 900: '#7c2d12' },
+                        stardust: '#ffd700',
+                        aurora: '#00ff88',
+                        comet: '#ff6b6b',
+                        supernova: '#ff9f43',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Zen Maru Gothic', 'system-ui', 'sans-serif'],
+                        display: ['Zen Maru Gothic', 'Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    boxShadow: {
+                        'glow-sm': '0 0 10px rgba(199,48,88,0.15)',
+                        'glow': '0 0 20px rgba(199,48,88,0.2)',
+                        'glow-lg': '0 0 40px rgba(199,48,88,0.25)',
+                        'glow-teal': '0 0 20px rgba(240,112,32,0.2)',
+                        'glow-orange': '0 0 20px rgba(255,159,67,0.2)',
+                        'glow-green': '0 0 20px rgba(0,255,136,0.2)',
+                    },
                 }
             }
         }
     </script>
+    <style>
+        /* === Starfield Background === */
+        .starfield {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .starfield .stars-sm,
+        .starfield .stars-md,
+        .starfield .stars-lg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 200%;
+            border-radius: 50%;
+        }
+        .starfield .stars-sm {
+            width: 1px; height: 1px;
+            box-shadow:
+                24px 89px #fff, 150px 320px #fff, 290px 50px #fff, 410px 180px #fff, 530px 400px #fff,
+                680px 120px #fff, 790px 350px #fff, 910px 60px #fff, 1050px 290px #fff, 1180px 440px #fff,
+                70px 510px #fff, 200px 680px #fff, 340px 570px #fff, 480px 730px #fff, 610px 600px #fff,
+                750px 760px #fff, 890px 520px #fff, 1020px 700px #fff, 1150px 580px #fff, 1280px 670px #fff,
+                45px 890px #fff, 170px 1020px #fff, 310px 860px #fff, 460px 980px #fff, 590px 1100px #fff,
+                720px 910px #fff, 860px 1060px #fff, 1000px 870px #fff, 1130px 1010px #fff, 1270px 930px #fff,
+                100px 1200px #fff, 240px 1350px #fff, 380px 1180px #fff, 520px 1320px #fff, 660px 1250px #fff,
+                800px 1400px #fff, 940px 1160px #fff, 1080px 1300px #fff, 1220px 1200px #fff, 1350px 1380px #fff,
+                30px 1500px #fff, 180px 1620px #fff, 320px 1540px #fff, 470px 1680px #fff, 620px 1570px #fff,
+                760px 1650px #fff, 900px 1500px #fff, 1040px 1600px #fff, 1190px 1540px #fff, 1320px 1700px #fff,
+                55px 1850px #fff, 210px 1950px #fff, 350px 1800px #fff, 500px 1920px #fff, 640px 1870px #fff,
+                780px 2000px #fff, 920px 1810px #fff, 1060px 1930px #fff, 1200px 1860px #fff, 1340px 1980px #fff;
+            animation: starfield-drift 180s linear infinite;
+            opacity: 0.6;
+        }
+        .starfield .stars-md {
+            width: 2px; height: 2px;
+            box-shadow:
+                80px 150px rgba(255,255,255,0.9), 260px 400px rgba(255,255,255,0.8), 440px 100px rgba(255,255,255,0.9),
+                620px 300px rgba(255,255,255,0.8), 800px 500px rgba(255,255,255,0.9), 980px 200px rgba(255,255,255,0.8),
+                1160px 450px rgba(255,255,255,0.9), 130px 600px rgba(255,255,255,0.8), 350px 750px rgba(255,255,255,0.9),
+                570px 650px rgba(255,255,255,0.8), 760px 850px rgba(255,255,255,0.9), 950px 720px rgba(255,255,255,0.8),
+                1120px 800px rgba(255,255,255,0.9), 60px 1000px rgba(255,255,255,0.8), 280px 1150px rgba(255,255,255,0.9),
+                500px 1050px rgba(255,255,255,0.8), 710px 1200px rgba(255,255,255,0.9), 930px 1100px rgba(255,255,255,0.8),
+                1100px 1300px rgba(255,255,255,0.9), 200px 1400px rgba(255,255,255,0.8);
+            animation: starfield-drift 240s linear infinite;
+            opacity: 0.5;
+        }
+        .starfield .stars-lg {
+            width: 3px; height: 3px;
+            box-shadow:
+                180px 250px rgba(224,104,136,0.8), 540px 100px rgba(240,112,32,0.7), 900px 380px rgba(255,215,0,0.6),
+                1200px 150px rgba(224,104,136,0.7), 360px 500px rgba(240,112,32,0.8), 720px 680px rgba(255,215,0,0.7),
+                1050px 550px rgba(224,104,136,0.6), 100px 800px rgba(240,112,32,0.7), 450px 950px rgba(255,215,0,0.8),
+                800px 1050px rgba(224,104,136,0.7), 1150px 900px rgba(240,112,32,0.6), 250px 1200px rgba(255,215,0,0.7);
+            animation: twinkle 4s ease-in-out infinite alternate, starfield-drift 300s linear infinite;
+        }
+
+        /* === Nebula Gradient === */
+        .cosmic-bg {
+            background:
+                radial-gradient(ellipse at 15% 60%, rgba(199,48,88,0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 25%, rgba(240,112,32,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(255,107,107,0.04) 0%, transparent 40%),
+                linear-gradient(180deg, #2a0810 0%, #4a0e1e 30%, #1a0a12 70%, #150810 100%);
+            background-attachment: fixed;
+        }
+        .starfield { opacity: 1; }
+
+        /* === Keyframe Animations === */
+        @keyframes starfield-drift {
+            from { transform: translateY(0); }
+            to { transform: translateY(-50%); }
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(199,48,88,0.1); }
+            50% { box-shadow: 0 0 30px rgba(199,48,88,0.3); }
+        }
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scale-in {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; width: 0; }
+            5% { opacity: 1; width: 80px; }
+            70% { opacity: 1; }
+            100% { transform: translateX(500px) translateY(500px) rotate(45deg); opacity: 0; width: 0; }
+        }
+
+        /* === Utility Animation Classes === */
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+        .animate-fade-in-up { animation: fade-in-up 0.5s ease-out forwards; }
+        .animate-scale-in { animation: scale-in 0.4s ease-out forwards; }
+
+        /* === HTMX Swap Animations === */
+        .htmx-added { animation: fade-in-up 0.3s ease-out; }
+        .htmx-settling { animation: fade-in-up 0.3s ease-out; }
+        .htmx-swapping { opacity: 0; transition: opacity 0.2s ease-out; }
+
+        /* === HTMX Loading Indicator === */
+        .htmx-indicator {
+            display: none;
+        }
+        .htmx-request .htmx-indicator,
+        .htmx-request.htmx-indicator {
+            display: inline-flex;
+        }
+        @keyframes spinner-rotate {
+            to { transform: rotate(360deg); }
+        }
+        .loading-spinner {
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 2px solid rgba(199,48,88,0.2);
+            border-top-color: #c73058;
+            border-radius: 50%;
+            animation: spinner-rotate 0.6s linear infinite;
+        }
+
+        /* === Global HTMX Request Progress Bar === */
+        .htmx-progress {
+            position: fixed;
+            top: 0; left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #c73058, #f07020, #ffd700);
+            z-index: 9999;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease-out;
+            pointer-events: none;
+            width: 100%;
+        }
+        .htmx-progress.active {
+            transform: scaleX(0.85);
+            transition: transform 8s cubic-bezier(0.1, 0.5, 0.1, 1);
+        }
+        .htmx-progress.done {
+            transform: scaleX(1);
+            transition: transform 0.15s ease-out;
+        }
+        .htmx-progress.fade {
+            opacity: 0;
+            transition: opacity 0.4s ease-out;
+        }
+
+        /* === Toast Notification === */
+        @keyframes toast-in {
+            from { opacity: 0; transform: translateY(-12px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes toast-out {
+            from { opacity: 1; transform: translateY(0) scale(1); }
+            to { opacity: 0; transform: translateY(-12px) scale(0.95); }
+        }
+        .toast-enter { animation: toast-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        .toast-exit { animation: toast-out 0.25s ease-in forwards; }
+
+        /* === Form Inputs (Django rendered) === */
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="url"],
+        input[type="tel"],
+        input[type="date"],
+        input[type="datetime-local"],
+        input[type="search"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            background-color: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #f3f4f6;
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus,
+        input[type="url"]:focus,
+        input[type="tel"]:focus,
+        input[type="date"]:focus,
+        input[type="datetime-local"]:focus,
+        input[type="search"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: rgba(199,48,88,0.5);
+            box-shadow: 0 0 0 3px rgba(199,48,88,0.15);
+        }
+        input::placeholder,
+        textarea::placeholder {
+            color: rgba(255,255,255,0.25);
+        }
+        /* Checkbox / Radio - keep inline */
+        input[type="checkbox"],
+        input[type="radio"] {
+            width: auto;
+            accent-color: #c73058;
+        }
+
+        /* === Text Glow === */
+        .text-glow { text-shadow: 0 0 20px rgba(199,48,88,0.3), 0 0 40px rgba(199,48,88,0.1); }
+        .text-glow-teal { text-shadow: 0 0 20px rgba(240,112,32,0.3); }
+
+        /* === Glassmorphism Fallback === */
+        @supports not (backdrop-filter: blur(12px)) {
+            .glass-card { background: rgba(74, 14, 30, 0.85) !important; }
+        }
+
+        /* === Accessibility: Reduced Motion === */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .starfield { display: none; }
+        }
+
+        /* === Smooth Page Transitions === */
+        @keyframes page-enter {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        main { animation: page-enter 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+    </style>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col">
-    {% include "partials/_navbar.html" %}
+<body class="cosmic-bg text-gray-900 dark:text-gray-100 min-h-screen flex flex-col relative">
+    <!-- HTMX Progress Bar -->
+    <div id="htmx-progress" class="htmx-progress"></div>
 
-    {% if messages %}
-    <div class="max-w-7xl mx-auto px-4 mt-4">
-        {% for message in messages %}
-        <div class="rounded-lg p-4 mb-2 {% if message.tags == 'success' %}bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200{% elif message.tags == 'error' %}bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200{% else %}bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200{% endif %}">
-            {{ message }}
-        </div>
-        {% endfor %}
+    <!-- Starfield Background -->
+    <div class="starfield" aria-hidden="true">
+        <div class="stars-sm"></div>
+        <div class="stars-md"></div>
+        <div class="stars-lg"></div>
     </div>
-    {% endif %}
 
-    <main class="flex-1 max-w-7xl mx-auto px-4 py-6 w-full">
-        {% block content %}{% endblock %}
-    </main>
+    <div class="relative z-10 flex flex-col min-h-screen">
+        {% include "partials/_navbar.html" %}
 
-    <footer class="bg-white dark:bg-gray-800 border-t dark:border-gray-700 py-4 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500 dark:text-gray-400">
-            &copy; 2025 MusicApp
+        <!-- Toast Notifications -->
+        {% if messages %}
+        <div class="max-w-7xl mx-auto px-4 mt-4 w-full" x-data="{ toasts: true }" x-show="toasts" x-init="setTimeout(() => { $el.querySelectorAll('.toast-enter').forEach(t => t.classList.replace('toast-enter', 'toast-exit')); setTimeout(() => toasts = false, 300) }, 4000)">
+            {% for message in messages %}
+            <div class="toast-enter rounded-xl p-4 mb-2 backdrop-blur-md border flex items-center gap-3 {% if message.tags == 'success' %}bg-aurora/10 border-aurora/20 text-green-300 dark:text-green-200{% elif message.tags == 'error' %}bg-comet/10 border-comet/20 text-red-300 dark:text-red-200{% else %}bg-nebula-400/10 border-nebula-400/20 text-orange-300 dark:text-orange-200{% endif %}">
+                {% if message.tags == 'success' %}<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>{% elif message.tags == 'error' %}<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>{% else %}<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>{% endif %}
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
         </div>
-    </footer>
+        {% endif %}
+
+        <main class="flex-1 max-w-7xl mx-auto px-4 py-6 w-full">
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="bg-white/5 dark:bg-white/5 backdrop-blur-md border-t border-white/10 py-4 mt-auto">
+            <div class="max-w-7xl mx-auto px-4 text-center text-sm text-gray-400 dark:text-gray-500 flex items-center justify-center gap-2">
+                {% include "partials/baku/_baku_icon.html" %}
+                <span>&copy; 2025 残音</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- HTMX Progress Bar Script -->
+    <script>
+        (function() {
+            const bar = document.getElementById('htmx-progress');
+            document.body.addEventListener('htmx:beforeRequest', function() {
+                bar.classList.remove('done', 'fade');
+                bar.classList.add('active');
+            });
+            document.body.addEventListener('htmx:afterRequest', function() {
+                bar.classList.remove('active');
+                bar.classList.add('done');
+                setTimeout(() => bar.classList.add('fade'), 200);
+                setTimeout(() => bar.classList.remove('done', 'fade'), 700);
+            });
+        })();
+    </script>
 
     {% block extra_js %}{% endblock %}
 </body>

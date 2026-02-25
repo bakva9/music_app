@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}統計 - MusicApp{% endblock %}
+{% block title %}統計 - 残音{% endblock %}
 
 {% block extra_head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
@@ -8,15 +8,15 @@
 
 {% block content %}
 <div class="max-w-2xl mx-auto">
-    <h1 class="text-2xl font-bold mb-6">練習統計</h1>
+    <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow mb-6">練習統計</h1>
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-        <h2 class="text-lg font-bold mb-4">週間練習時間</h2>
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10">
+        <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-4">週間練習時間</h2>
         <canvas id="weeklyChart" height="200"></canvas>
     </div>
 
     <div class="mt-6 text-center">
-        <a href="{% url 'guitarlog:home' %}" class="text-primary-600 dark:text-primary-400 hover:underline">&larr; 練習記録に戻る</a>
+        <a href="{% url 'guitarlog:home' %}" class="text-cosmic-500 dark:text-cosmic-300 hover:text-cosmic-400 dark:hover:text-cosmic-200 transition-colors">&larr; 練習記録に戻る</a>
     </div>
 </div>
 {% endblock %}
@@ -34,8 +34,8 @@ fetch('{% url "guitarlog:stats_data" %}')
                 datasets: [{
                     label: '練習時間（分）',
                     data: data.data,
-                    backgroundColor: isDark ? 'rgba(14, 165, 233, 0.7)' : 'rgba(14, 165, 233, 0.5)',
-                    borderColor: 'rgb(14, 165, 233)',
+                    backgroundColor: isDark ? 'rgba(199, 48, 88, 0.7)' : 'rgba(199, 48, 88, 0.5)',
+                    borderColor: 'rgb(199, 48, 88)',
                     borderWidth: 1,
                     borderRadius: 4,
                 }]

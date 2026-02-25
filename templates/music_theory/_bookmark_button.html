@@ -1,0 +1,7 @@
+<button hx-post="{% url 'music_theory:toggle_bookmark' topic.slug %}"
+        hx-target="#bookmark-btn"
+        hx-swap="innerHTML"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        class="p-2 rounded-xl border {% if is_bookmarked %}border-cosmic-200/30 dark:border-white/10 bg-white/80 dark:bg-white/5 text-stardust{% else %}border-cosmic-200/30 dark:border-white/10 text-cosmic-600/60 dark:text-white/50 hover:text-stardust{% endif %} transition-all duration-300">
+    {% if is_bookmarked %}&#9733;{% else %}&#9734;{% endif %}
+</button>

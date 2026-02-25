@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}コード進行 - 残音{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="font-display text-2xl font-bold text-white text-glow mb-4">音楽理論</h1>
+    {% include "music_theory/_section_nav.html" with active_section="progressions" %}
+</div>
+
+<div x-data="progressionExplorer()">
+    <!-- Key Selector -->
+    <div class="mb-4">
+        <div class="text-sm text-white/50 mb-2">キーを選択</div>
+        <div class="flex flex-wrap gap-1.5">
+            <template x-for="(label, i) in keyLabels" :key="i">
+                <button @click="selectedKey = i"
+                        :class="selectedKey === i ? 'bg-cosmic-500/30 text-cosmic-300 border-cosmic-400/30' : 'text-white/50 hover:text-white/80 hover:bg-white/5 border-white/10'"
+                        class="w-10 h-10 rounded-lg text-sm font-mono font-medium border transition-all duration-200"
+                        x-text="label"></button>
+            </template>
+        </div>
+    </div>
+
+    <!-- Starting Chord Category Tabs -->
+    <div class="flex flex-wrap gap-2 mb-4">
+        <a href="{% url 'music_theory:progression_list' %}"
+           class="px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200
+                  {% if not current_starting %}bg-cosmic-500/20 text-cosmic-300 border border-cosmic-400/30{% else %}text-white/50 hover:text-white/80 hover:bg-white/5 border border-white/10{% endif %}"
+           hx-get="{% url 'music_theory:progression_list' %}"
+           hx-target="#progression-results"
+           hx-swap="innerHTML"
+           hx-push-url="true">すべて</a>
+        {% for value, label in starting_choices %}
+        <a href="{% url 'music_theory:progression_list' %}?starting={{ value }}"
+           class="px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200
+                  {% if current_starting == value %}bg-cosmic-500/20 text-cosmic-300 border border-cosmic-400/30{% else %}text-white/50 hover:text-white/80 hover:bg-white/5 border border-white/10{% endif %}"
+           hx-get="{% url 'music_theory:progression_list' %}?starting={{ value }}"
+           hx-target="#progression-results"
+           hx-swap="innerHTML"
+           hx-push-url="true">{{ label }}</a>
+        {% endfor %}
+    </div>
+
+    <!-- Results -->
+    <div id="progression-results">
+        {% include "music_theory/_progression_results.html" %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function progressionExplorer() {
+    return {
+        selectedKey: 0,
+        playing: false,
+        playingSlug: '',
+        playingIndex: -1,
+        _stopFlag: false,
+        _audioCtx: null,
+
+        notesSharp: ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'],
+        keyLabels: ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'],
+
+        normalizeRoot(root) {
+            const map = {'Db':'C#','D♭':'C#','Eb':'D#','E♭':'D#','Gb':'F#','G♭':'F#','Ab':'G#','A♭':'G#','Bb':'A#','B♭':'A#','Cb':'B','C♭':'B','Fb':'E','F♭':'E'};
+            return map[root] || root;
+        },
+
+        parseChord(chord) {
+            chord = chord.trim();
+            if (!chord) return null;
+            let root, quality;
+            if (chord.length > 1 && '#♯b♭'.includes(chord[1])) {
+                root = chord.substring(0, 2);
+                quality = chord.substring(2);
+            } else {
+                root = chord[0];
+                quality = chord.substring(1);
+            }
+            return { root: this.normalizeRoot(root), quality };
+        },
+
+        transpose(chord, semitones) {
+            const parsed = this.parseChord(chord);
+            if (!parsed) return chord;
+            const idx = this.notesSharp.indexOf(parsed.root);
+            if (idx === -1) return chord;
+            const newIdx = (idx + semitones + 12) % 12;
+
+            let quality = parsed.quality;
+            const slashMatch = quality.match(/^(.*)\/([A-G][#♯b♭]?)$/);
+            if (slashMatch) {
+                const bassNorm = this.normalizeRoot(slashMatch[2]);
+                const bassIdx = this.notesSharp.indexOf(bassNorm);
+                if (bassIdx !== -1) {
+                    const newBassIdx = (bassIdx + semitones + 12) % 12;
+                    quality = slashMatch[1] + '/' + this.keyLabels[newBassIdx];
+                }
+            }
+
+            return this.keyLabels[newIdx] + quality;
+        },
+
+        // --- Web Audio API ---
+        getAudioCtx() {
+            if (!this._audioCtx) this._audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (this._audioCtx.state === 'suspended') this._audioCtx.resume();
+            return this._audioCtx;
+        },
+
+        chordIntervals(quality) {
+            const q = quality.replace(/\/.*$/, '').trim();
+            const map = {
+                '': [0,4,7], 'm': [0,3,7], '7': [0,4,7,10], 'M7': [0,4,7,11], 'maj7': [0,4,7,11],
+                'm7': [0,3,7,10], 'dim': [0,3,6], 'm7(♭5)': [0,3,6,10], 'm7(b5)': [0,3,6,10],
+                'aug': [0,4,8], 'sus4': [0,5,7], 'sus2': [0,2,7], 'add9': [0,4,7,14],
+                '9': [0,4,7,10,14], 'm9': [0,3,7,10,14], '6': [0,4,7,9], 'm6': [0,3,7,9],
+            };
+            return map[q] || [0,4,7];
+        },
+
+        chordToFreqs(chordName) {
+            const parsed = this.parseChord(chordName);
+            if (!parsed) return [];
+            const rootIdx = this.notesSharp.indexOf(parsed.root);
+            if (rootIdx === -1) return [];
+            const baseMidi = 48 + rootIdx;
+            return this.chordIntervals(parsed.quality).map(i => 440 * Math.pow(2, (baseMidi + i - 69) / 12));
+        },
+
+        playChordSound(freqs, duration = 0.7) {
+            const ctx = this.getAudioCtx();
+            const now = ctx.currentTime;
+            const gain = ctx.createGain();
+            gain.connect(ctx.destination);
+            gain.gain.setValueAtTime(0.18, now);
+            gain.gain.setValueAtTime(0.18, now + duration * 0.6);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            freqs.forEach(f => {
+                const osc = ctx.createOscillator();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(f, now);
+                osc.connect(gain);
+                osc.start(now);
+                osc.stop(now + duration);
+            });
+        },
+
+        async playProgression(chordsStr, slug) {
+            if (this.playing && this.playingSlug === slug) {
+                this.stopPlayback();
+                return;
+            }
+            this.stopPlayback();
+
+            const chords = chordsStr.split('→').map(c => c.trim()).filter(c => c);
+            this.playing = true;
+            this.playingSlug = slug;
+            this._stopFlag = false;
+
+            for (let i = 0; i < chords.length; i++) {
+                if (this._stopFlag) break;
+                this.playingIndex = i;
+                const transposed = this.transpose(chords[i], this.selectedKey);
+                const freqs = this.chordToFreqs(transposed);
+                if (freqs.length) this.playChordSound(freqs, 0.7);
+                await new Promise(r => setTimeout(r, 800));
+            }
+
+            this.playing = false;
+            this.playingSlug = '';
+            this.playingIndex = -1;
+        },
+
+        stopPlayback() {
+            this._stopFlag = true;
+            this.playing = false;
+            this.playingSlug = '';
+            this.playingIndex = -1;
+        },
+    }
+}
+</script>
+{% endblock %}

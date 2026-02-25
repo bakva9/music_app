@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}費用を追加 - MusicApp{% endblock %}
+{% block title %}費用を追加 - 残音{% endblock %}
 
 {% block content %}
 <div class="max-w-lg mx-auto">
-    <h1 class="text-2xl font-bold mb-6">費用を追加</h1>
-    <form method="POST" class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 space-y-4">
+    <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow mb-6">費用を追加</h1>
+    <form method="POST" class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10 space-y-4">
         {% csrf_token %}
         {% for field in form %}
         <div>
             <label for="{{ field.id_for_label }}" class="block text-sm font-medium mb-1">{{ field.label }}</label>
             {{ field }}
-            {% if field.errors %}<p class="text-red-500 text-sm mt-1">{{ field.errors.0 }}</p>{% endif %}
+            {% if field.errors %}<p class="text-comet dark:text-comet/80 text-sm mt-1">{{ field.errors.0 }}</p>{% endif %}
         </div>
         {% endfor %}
         <div class="flex gap-3">
-            <button type="submit" class="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 font-medium">保存</button>
-            <a href="{% url 'livelog:expense_list' %}" class="text-gray-500 dark:text-gray-400 px-6 py-2 hover:underline">キャンセル</a>
+            <button type="submit" class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-6 py-2 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300">保存</button>
+            <a href="{% url 'livelog:expense_list' %}" class="text-cosmic-600/60 dark:text-white/50 px-6 py-2 hover:underline">キャンセル</a>
         </div>
     </form>
 </div>

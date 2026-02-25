@@ -1,17 +1,76 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>サーバーエラー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cosmic: { 500: '#c73058', 900: '#4a0e1e', 950: '#2a0810' },
+                        nebula: { 400: '#fb923c', 500: '#f07020' },
+                    },
+                    fontFamily: { display: ['Zen Maru Gothic', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background:
+                radial-gradient(ellipse at 15% 60%, rgba(199,48,88,0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 25%, rgba(240,112,32,0.08) 0%, transparent 50%),
+                linear-gradient(180deg, #2a0810 0%, #4a0e1e 40%, #1a0a12 100%);
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .text-glow { text-shadow: 0 0 20px rgba(199,48,88,0.3), 0 0 40px rgba(199,48,88,0.1); }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center">
-    <div class="text-center">
-        <div class="text-6xl mb-4">🎵</div>
-        <h1 class="text-3xl font-bold mb-2">500</h1>
-        <p class="text-gray-500 mb-6">サーバーエラーが発生しました</p>
-        <a href="/" class="bg-sky-600 text-white px-6 py-3 rounded-lg hover:bg-sky-700 font-medium">ホームに戻る</a>
+<body class="min-h-screen flex items-center justify-center text-white">
+    <div class="text-center px-4">
+        <div class="w-28 h-28 mx-auto mb-6 animate-float">
+            <!-- Inline Baku sleeping (orange theme) -->
+            <svg viewBox="0 0 120 95" fill="none" class="w-full h-full">
+                <g>
+                    <text x="90" y="20" font-size="14" fill="white" font-family="sans-serif" font-weight="bold">Z
+                        <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
+                        <animate attributeName="y" values="20;12;20" dur="2s" repeatCount="indefinite"/>
+                    </text>
+                    <text x="100" y="10" font-size="10" fill="white" font-family="sans-serif" font-weight="bold">z
+                        <animate attributeName="opacity" values="0;1;0" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+                    </text>
+                </g>
+                <ellipse cx="58" cy="60" rx="38" ry="25" fill="#F07020"/>
+                <ellipse cx="58" cy="60" rx="38" ry="25" stroke="white" stroke-width="2.5" fill="none"/>
+                <ellipse cx="58" cy="65" rx="22" ry="13" fill="white"/>
+                <ellipse cx="40" cy="78" rx="9" ry="4.5" fill="#F07020" stroke="white" stroke-width="1.5"/>
+                <ellipse cx="72" cy="78" rx="9" ry="4.5" fill="#F07020" stroke="white" stroke-width="1.5"/>
+                <ellipse cx="35" cy="42" rx="25" ry="22" fill="#F07020"/>
+                <ellipse cx="35" cy="42" rx="25" ry="22" stroke="white" stroke-width="2.5" fill="none"/>
+                <ellipse cx="18" cy="24" rx="6" ry="9" fill="#F07020" transform="rotate(-25 18 24)"/>
+                <ellipse cx="18" cy="24" rx="6" ry="9" stroke="white" stroke-width="2" fill="none" transform="rotate(-25 18 24)"/>
+                <ellipse cx="50" cy="24" rx="6" ry="9" fill="#F07020" transform="rotate(10 50 24)"/>
+                <ellipse cx="50" cy="24" rx="6" ry="9" stroke="white" stroke-width="2" fill="none" transform="rotate(10 50 24)"/>
+                <path d="M46 45 Q56 43 58 48 Q57 53 50 51 Z" fill="#D86018"/>
+                <path d="M46 45 Q56 43 58 48 Q57 53 50 51 Z" stroke="white" stroke-width="1.8" fill="none"/>
+                <path d="M24 39 Q29 36 34 39" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <circle cx="22" cy="46" r="4" fill="#F0AAAA" opacity="0.4"/>
+            </svg>
+        </div>
+        <h1 class="font-display text-5xl font-bold mb-3 text-glow">500</h1>
+        <p class="text-white/50 mb-8 font-display text-lg">サーバーエラーが発生しました</p>
+        <a href="/" class="inline-block bg-gradient-to-r from-cosmic-500 to-nebula-500 text-white px-8 py-3 rounded-xl font-display font-bold transition-all duration-300 hover:scale-105" style="box-shadow: 0 0 20px rgba(199,48,88,0.2);">ホームに戻る</a>
     </div>
 </body>
 </html>

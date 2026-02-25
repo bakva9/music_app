@@ -1,0 +1,33 @@
+{% if progressions %}
+<div class="grid gap-3">
+    {% for p in progressions %}
+    <div class="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10 transition-all duration-300 hover:border-white/20">
+        <div class="flex justify-between items-start mb-2">
+            <div class="flex-1 min-w-0">
+                <div class="font-bold text-white/90">{{ p.name }}</div>
+                {% if p.description %}<p class="text-xs text-white/40 mt-0.5">{{ p.description }}</p>{% endif %}
+            </div>
+            <button @click="playProgression('{{ p.chords_in_c }}', '{{ p.slug }}')"
+                    class="w-9 h-9 rounded-full border transition-all duration-200 flex items-center justify-center text-sm shrink-0 ml-3"
+                    :class="playingSlug === '{{ p.slug }}' ? 'border-cosmic-400/50 bg-cosmic-500/20 text-cosmic-300' : 'border-white/10 text-white/40 hover:text-white/70 hover:border-white/20'">
+                <span x-text="playingSlug === '{{ p.slug }}' ? '■' : '▶'">▶</span>
+            </button>
+        </div>
+        <div class="text-sm text-white/40 font-mono mb-2">{{ p.degrees }}</div>
+        <div class="flex flex-wrap gap-1 items-center">
+            {% for chord in p.chord_list %}
+            <span class="px-2 py-0.5 rounded text-sm font-mono transition-all duration-150"
+                  :class="playingSlug === '{{ p.slug }}' && playingIndex === {{ forloop.counter0 }} ? 'bg-cosmic-500/30 text-cosmic-200' : 'text-white/70'"
+                  x-text="transpose('{{ chord }}', selectedKey)">{{ chord }}</span>
+            {% if not forloop.last %}<span class="text-white/20 text-xs">→</span>{% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-12 text-white/40">
+    <div class="text-4xl mb-3 opacity-60">🎵</div>
+    コード進行が登録されていません
+</div>
+{% endif %}

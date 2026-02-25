@@ -5,17 +5,38 @@
 {% block content %}
 <div class="max-w-lg mx-auto">
     <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow mb-6">{% if is_edit %}ライブを編集{% else %}ライブを追加{% endif %}</h1>
-    <form method="POST" enctype="multipart/form-data" class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10 space-y-4">
+    <form method="POST" enctype="multipart/form-data" class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10 space-y-4"
+          x-data="artistAutocomplete()">
         {% csrf_token %}
         {% for field in form %}
-        {% if field.name == 'thumbnail' %}
+        {% if field.name == 'artist' %}
+        <div class="relative">
+            <label for="{{ field.id_for_label }}" class="block text-sm font-medium mb-1">{{ field.label }}</label>
+            {{ field }}
+            <div x-show="results.length > 0" x-cloak
+                 class="absolute z-20 left-0 right-0 mt-1 bg-cosmic-950/95 backdrop-blur-xl rounded-xl border border-white/10 shadow-xl overflow-hidden">
+                <template x-for="(item, idx) in results" :key="idx">
+                    <button type="button" @click="selectArtist(item)"
+                            class="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-white/10 transition-colors text-left">
+                        <img :src="item.image_url" alt="" class="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                             x-show="item.image_url">
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm text-white/90 truncate" x-text="item.name"></div>
+                            <div class="text-xs text-white/40 truncate" x-text="item.genres.join(', ')"></div>
+                        </div>
+                    </button>
+                </template>
+            </div>
+            {% if field.errors %}<p class="text-comet dark:text-comet/80 text-sm mt-1">{{ field.errors.0 }}</p>{% endif %}
+        </div>
+        {% elif field.name == 'spotify_artist_id' or field.name == 'artist_image_url' %}
+        {{ field }}
+        {% elif field.name == 'thumbnail' %}
         <div x-data="{ preview: '{% if is_edit and event.thumbnail %}{{ event.thumbnail.url }}{% endif %}' }">
             <label for="{{ field.id_for_label }}" class="block text-sm font-medium mb-1">{{ field.label }}</label>
-            <!-- Preview -->
             <div x-show="preview" class="mb-3">
                 <img :src="preview" alt="サムネイルプレビュー" class="w-full max-h-48 object-cover rounded-xl border border-white/10">
             </div>
-            <!-- File input -->
             <label class="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl border-2 border-dashed border-white/20 hover:border-cosmic-400/40 bg-white/5 hover:bg-white/10 cursor-pointer transition-all duration-200">
                 <svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z"/>
@@ -40,10 +61,63 @@
         </div>
         {% endif %}
         {% endfor %}
+
+        <!-- Artist image preview -->
+        <div x-show="artistImage" x-cloak class="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/10">
+            <img :src="artistImage" alt="" class="w-12 h-12 rounded-full object-cover">
+            <span class="text-xs text-white/50">Spotify から取得</span>
+        </div>
+
         <div class="flex gap-3">
             <button type="submit" class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-6 py-2 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300">保存</button>
             <a href="{% url 'livelog:event_list' %}" class="text-cosmic-600/60 dark:text-white/50 px-6 py-2 hover:underline">キャンセル</a>
         </div>
     </form>
 </div>
+
+<script>
+function artistAutocomplete() {
+    return {
+        results: [],
+        artistImage: document.getElementById('id_artist_image_url')?.value || '',
+        timeout: null,
+
+        init() {
+            const artistInput = document.getElementById('id_artist');
+            if (artistInput) {
+                artistInput.addEventListener('input', (e) => {
+                    clearTimeout(this.timeout);
+                    this.timeout = setTimeout(() => this.search(e.target.value), 300);
+                });
+                artistInput.addEventListener('blur', () => {
+                    setTimeout(() => this.results = [], 200);
+                });
+            }
+        },
+
+        async search(q) {
+            if (!q || q.length < 2) { this.results = []; return; }
+            try {
+                const resp = await fetch(`{% url 'dashboard:spotify_search' %}?q=${encodeURIComponent(q)}&type=artist`);
+                const data = await resp.json();
+                this.results = data.results || [];
+            } catch(e) {
+                this.results = [];
+            }
+        },
+
+        selectArtist(item) {
+            const artistInput = document.getElementById('id_artist');
+            const spotifyInput = document.getElementById('id_spotify_artist_id');
+            const imageInput = document.getElementById('id_artist_image_url');
+
+            if (artistInput) artistInput.value = item.name;
+            if (spotifyInput) spotifyInput.value = item.spotify_artist_id;
+            if (imageInput) imageInput.value = item.image_url;
+            this.artistImage = item.image_url;
+            this.results = [];
+        }
+    };
+}
+</script>
 {% endblock %}

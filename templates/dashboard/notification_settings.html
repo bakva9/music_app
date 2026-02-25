@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}通知設定 - 残音{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto">
+    <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow mb-6">通知設定</h1>
+
+    <form method="POST" class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10 space-y-4">
+        {% csrf_token %}
+
+        <label class="flex items-center justify-between">
+            <div>
+                <span class="text-sm text-white/90">練習リマインダー</span>
+                <p class="text-xs text-white/40">ストリークが途切れそうなとき通知</p>
+            </div>
+            <input type="checkbox" name="practice_reminder" {% if prefs.practice_reminder %}checked{% endif %}>
+        </label>
+
+        <label class="flex items-center justify-between">
+            <div>
+                <span class="text-sm text-white/90">ライブリマインダー</span>
+                <p class="text-xs text-white/40">ライブの前日に通知</p>
+            </div>
+            <input type="checkbox" name="live_reminder" {% if prefs.live_reminder %}checked{% endif %}>
+        </label>
+
+        <label class="flex items-center justify-between">
+            <div>
+                <span class="text-sm text-white/90">実績通知</span>
+                <p class="text-xs text-white/40">新しい実績を獲得したとき通知</p>
+            </div>
+            <input type="checkbox" name="achievement_notify" {% if prefs.achievement_notify %}checked{% endif %}>
+        </label>
+
+        <button type="submit" class="bg-gradient-to-r from-cosmic-500 to-nebula-500 hover:from-cosmic-400 hover:to-nebula-400 text-white px-6 py-2 rounded-xl font-display font-bold shadow-glow hover:shadow-glow-lg transition-all duration-300">保存</button>
+    </form>
+</div>
+{% endblock %}

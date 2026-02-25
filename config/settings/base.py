@@ -109,3 +109,12 @@ LOGOUT_REDIRECT_URL = '/'
 
 # Gemini API
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+
+# Spotify API
+SPOTIFY_CLIENT_ID = os.environ.get('SPOTIFY_CLIENT_ID', '')
+SPOTIFY_CLIENT_SECRET = os.environ.get('SPOTIFY_CLIENT_SECRET', '')
+
+# VAPID (Web Push)
+VAPID_PUBLIC_KEY = os.environ.get('VAPID_PUBLIC_KEY', '')
+VAPID_PRIVATE_KEY = os.environ.get('VAPID_PRIVATE_KEY', '')
+VAPID_ADMIN_EMAIL = os.environ.get('VAPID_ADMIN_EMAIL', '')

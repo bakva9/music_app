@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}実績 - 残音{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow">実績</h1>
+        <span class="text-sm font-mono text-cosmic-600/60 dark:text-white/40">{{ earned_count }} / {{ total_count }}</span>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="mb-8">
+        <div class="w-full bg-white/10 rounded-full h-2">
+            {% widthratio earned_count total_count 100 as pct %}
+            <div class="h-full rounded-full bg-gradient-to-r from-cosmic-500 via-nebula-400 to-stardust transition-all duration-500"
+                 style="width: {% widthratio earned_count total_count 100 %}%"></div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {% for item in achievements %}
+        <div class="relative bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border transition-all duration-300
+                    {% if item.earned %}border-stardust/30 hover:shadow-[0_4px_20px_rgba(255,215,0,0.1)]{% else %}border-white/10 opacity-50{% endif %}">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0
+                            {% if item.earned %}bg-gradient-to-br from-stardust/20 to-cosmic-500/20 text-stardust{% else %}bg-white/5 text-white/20{% endif %}">
+                    {% include "dashboard/_badge_icons.html" with icon=item.definition.icon_name %}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h3 class="font-display font-bold {% if item.earned %}text-white/90{% else %}text-white/40{% endif %}">
+                        {{ item.definition.name }}
+                    </h3>
+                    <p class="text-xs {% if item.earned %}text-white/50{% else %}text-white/20{% endif %} mt-0.5">
+                        {{ item.definition.description }}
+                    </p>
+                    {% if item.earned_at %}
+                    <p class="text-[10px] text-stardust/60 font-mono mt-2">{{ item.earned_at|date:"Y/m/d" }} 獲得</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% if not item.earned %}
+            <div class="absolute inset-0 rounded-2xl flex items-center justify-center">
+                <svg class="w-8 h-8 text-white/10" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'zanon-v1';
+const CACHE_NAME = 'zanon-v2';
 const PRECACHE_URLS = [
   '/',
   '/static/manifest.json',
@@ -90,4 +90,45 @@ self.addEventListener('fetch', (event) => {
     );
     return;
   }
+});
+
+// Push notification handler
+self.addEventListener('push', (event) => {
+  let data = { title: '残音', body: '新しい通知があります', url: '/' };
+
+  if (event.data) {
+    try {
+      data = { ...data, ...event.data.json() };
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: '/static/icons/icon-192.png',
+      badge: '/static/icons/icon-192.png',
+      data: { url: data.url },
+      vibrate: [100, 50, 100],
+    })
+  );
+});
+
+// Notification click handler
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = event.notification.data?.url || '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      for (const client of windowClients) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          client.navigate(url);
+          return client.focus();
+        }
+      }
+      return clients.openWindow(url);
+    })
+  );
 });

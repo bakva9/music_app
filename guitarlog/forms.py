@@ -5,11 +5,13 @@ from .models import PracticeSong, PracticeSession, PracticeGoal
 class PracticeSongForm(forms.ModelForm):
     class Meta:
         model = PracticeSong
-        fields = ['title', 'artist', 'difficulty', 'status', 'target_bpm']
+        fields = ['title', 'artist', 'difficulty', 'status', 'target_bpm', 'spotify_id', 'album_art_url']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2'}),
             'artist': forms.TextInput(attrs={'class': 'w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2'}),
             'target_bpm': forms.NumberInput(attrs={'class': 'w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2'}),
+            'spotify_id': forms.HiddenInput(),
+            'album_art_url': forms.HiddenInput(),
         }
 
 

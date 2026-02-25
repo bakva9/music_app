@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile_user }} - 残音{% endblock %}
+
+{% block extra_head %}
+<meta property="og:title" content="{{ profile_user }} - 残音">
+<meta property="og:description" content="{% if settings.bio %}{{ settings.bio|truncatechars:100 }}{% else %}{{ profile_user }}の音楽活動プロフィール{% endif %}">
+<meta property="og:type" content="profile">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <!-- Profile Header -->
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-6 border border-cosmic-200/30 dark:border-white/10 mb-6 text-center">
+        {% if profile_user.avatar %}
+        <img src="{{ profile_user.avatar.url }}" alt="{{ profile_user }}" class="w-20 h-20 mx-auto rounded-full object-cover mb-3 border-2 border-cosmic-400/30">
+        {% else %}
+        <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-cosmic-500 to-nebula-500 flex items-center justify-center text-white text-3xl font-display font-bold mb-3">
+            {{ profile_user.username|make_list|first|upper }}
+        </div>
+        {% endif %}
+        <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow">{{ profile_user.display_name|default:profile_user.username }}</h1>
+        {% if settings.bio %}
+        <p class="text-sm text-cosmic-600/60 dark:text-white/50 mt-2 max-w-md mx-auto">{{ settings.bio }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Practice Stats -->
+    {% if settings.show_practice_stats and total_minutes is not None %}
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 mb-4">
+        <h2 class="font-display font-bold text-cosmic-800 dark:text-white/90 mb-3">練習統計</h2>
+        <div class="grid grid-cols-3 gap-4 text-center">
+            <div>
+                <div class="text-xl font-mono font-bold text-cosmic-500 dark:text-cosmic-300">{{ total_minutes }}</div>
+                <div class="text-xs text-cosmic-600/60 dark:text-white/50">合計（分）</div>
+            </div>
+            <div>
+                <div class="text-xl font-mono font-bold text-nebula-500 dark:text-nebula-300">{{ session_count }}</div>
+                <div class="text-xs text-cosmic-600/60 dark:text-white/50">練習回数</div>
+            </div>
+            <div>
+                <div class="text-xl font-mono font-bold text-stardust">{{ streak }}日</div>
+                <div class="text-xs text-cosmic-600/60 dark:text-white/50">ストリーク</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Achievements -->
+    {% if settings.show_achievements and achievements %}
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 mb-4">
+        <h2 class="font-display font-bold text-cosmic-800 dark:text-white/90 mb-3">獲得した実績</h2>
+        <div class="flex flex-wrap gap-2">
+            {% for ua in achievements %}
+            <div class="flex items-center gap-1.5 px-2.5 py-1.5 bg-stardust/10 rounded-lg border border-stardust/20">
+                <div class="w-5 h-5 text-stardust">
+                    {% include "dashboard/_badge_icons.html" with icon=ua.achievement.icon_name size="w-3.5 h-3.5" %}
+                </div>
+                <span class="text-xs font-display font-bold text-white/70">{{ ua.achievement.name }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Live History -->
+    {% if settings.show_live_history and live_events %}
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 mb-4">
+        <h2 class="font-display font-bold text-cosmic-800 dark:text-white/90 mb-3">
+            ライブ参戦履歴
+            <span class="text-sm font-mono text-cosmic-600/60 dark:text-white/40 ml-2">{{ live_count }}回</span>
+        </h2>
+        <div class="space-y-2">
+            {% for event in live_events %}
+            <div class="flex items-center gap-3 text-sm">
+                {% if event.artist_image_url %}
+                <img src="{{ event.artist_image_url }}" alt="" class="w-8 h-8 rounded-lg object-cover">
+                {% else %}
+                <div class="w-8 h-8 rounded-lg bg-orange-500/15 flex items-center justify-center">
+                    <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M15 2H9a2 2 0 0 0-2 2v6a5 5 0 0 0 10 0V4a2 2 0 0 0-2-2Z"/></svg>
+                </div>
+                {% endif %}
+                <div class="flex-1 min-w-0">
+                    <span class="text-white/80 truncate block">{{ event.artist }}</span>
+                </div>
+                <time class="text-xs text-white/30 flex-shrink-0">{{ event.date|date:"Y/m/d" }}</time>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Compositions -->
+    {% if settings.show_compositions and projects %}
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 mb-4">
+        <h2 class="font-display font-bold text-cosmic-800 dark:text-white/90 mb-3">作曲プロジェクト</h2>
+        <div class="space-y-2">
+            {% for p in projects %}
+            <div class="flex items-center justify-between text-sm">
+                <span class="text-white/80">{{ p.title }}</span>
+                <span class="text-xs px-2 py-0.5 rounded-lg
+                    {% if p.status == 'done' %}bg-aurora/20 text-aurora
+                    {% else %}bg-white/10 text-white/50{% endif %}">
+                    {{ p.get_status_display }}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

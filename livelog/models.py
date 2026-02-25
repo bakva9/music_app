@@ -9,6 +9,8 @@ class LiveEvent(models.Model):
     date = models.DateField('公演日')
     venue = models.CharField('会場', max_length=200, blank=True)
     thumbnail = models.ImageField('サムネイル', upload_to='livelog/thumbnails/', blank=True)
+    spotify_artist_id = models.CharField('Spotify Artist ID', max_length=50, blank=True)
+    artist_image_url = models.URLField('アーティスト画像', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

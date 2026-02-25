@@ -14,6 +14,7 @@ urlpatterns = [
     path('practice/', include('guitarlog.urls')),
     path('live/', include('livelog.urls')),
     path('compose/', include('songdiary.urls')),
+    path('u/<str:username>/', include('accounts.urls')),
     path('', include('dashboard.urls')),
 ]
 

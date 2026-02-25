@@ -1,0 +1,15 @@
+{% for ua in new_achievements %}
+<div class="toast-enter bg-cosmic-950/95 backdrop-blur-xl rounded-xl p-4 border border-stardust/30 shadow-[0_0_20px_rgba(255,215,0,0.15)] flex items-center gap-3 max-w-sm"
+     x-data="{ show: true }"
+     x-init="setTimeout(() => { $el.classList.replace('toast-enter', 'toast-exit'); setTimeout(() => show = false, 300) }, 5000)"
+     x-show="show">
+    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-stardust/30 to-cosmic-500/30 flex items-center justify-center flex-shrink-0 text-stardust">
+        {% include "dashboard/_badge_icons.html" with icon=ua.achievement.icon_name size="w-5 h-5" %}
+    </div>
+    <div>
+        <div class="text-xs text-stardust font-bold">実績解除！</div>
+        <div class="text-sm font-display font-bold text-white/90">{{ ua.achievement.name }}</div>
+        <div class="text-xs text-white/50">{{ ua.achievement.description }}</div>
+    </div>
+</div>
+{% endfor %}

@@ -18,6 +18,8 @@ class PracticeSong(models.Model):
     difficulty = models.IntegerField('難易度', choices=DIFFICULTY_CHOICES, default=3)
     status = models.CharField('ステータス', max_length=20, choices=STATUS_CHOICES, default='practicing')
     target_bpm = models.PositiveIntegerField('目標BPM', null=True, blank=True)
+    spotify_id = models.CharField('Spotify ID', max_length=50, blank=True)
+    album_art_url = models.URLField('アルバムアート', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

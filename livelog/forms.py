@@ -7,12 +7,14 @@ input_cls = 'w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-wh
 class LiveEventForm(forms.ModelForm):
     class Meta:
         model = LiveEvent
-        fields = ['artist', 'title', 'date', 'venue', 'thumbnail']
+        fields = ['artist', 'title', 'date', 'venue', 'thumbnail', 'spotify_artist_id', 'artist_image_url']
         widgets = {
             'artist': forms.TextInput(attrs={'class': input_cls}),
             'title': forms.TextInput(attrs={'class': input_cls}),
             'date': forms.DateInput(attrs={'type': 'date', 'class': input_cls}),
             'venue': forms.TextInput(attrs={'class': input_cls}),
+            'spotify_artist_id': forms.HiddenInput(),
+            'artist_image_url': forms.HiddenInput(),
         }
 
 

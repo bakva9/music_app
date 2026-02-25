@@ -1,8 +1,12 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.http import require_POST
 from django.db.models import Q
-from .models import Topic, Bookmark, ChordProgression
+from django.utils import timezone
+from datetime import timedelta
+from .models import Topic, Bookmark, ChordProgression, Conversation, Message
+from .chatbot import retrieve_relevant_context, format_context_for_prompt, get_gemini_response
 
 
 def topic_list(request):
@@ -86,3 +90,111 @@ def progression_list(request):
 
 def diatonic_reference(request):
     return render(request, 'music_theory/diatonic_reference.html')
+
+
+@login_required
+@require_POST
+def chat_send(request):
+    user_message = request.POST.get('message', '').strip()
+    conversation_id = request.POST.get('conversation_id', '').strip()
+
+    if not user_message:
+        return render(request, 'music_theory/_chat_error.html', {
+            'error': 'メッセージを入力してください。'
+        })
+
+    # Rate limit: 10 messages per minute per user
+    one_minute_ago = timezone.now() - timedelta(minutes=1)
+    recent_count = Message.objects.filter(
+        conversation__user=request.user,
+        role='user',
+        created_at__gte=one_minute_ago,
+    ).count()
+    if recent_count >= 10:
+        return render(request, 'music_theory/_chat_error.html', {
+            'error': 'メッセージの送信が速すぎます。少し待ってから再度お試しください。'
+        })
+
+    # Rate limit: 1400 messages per day globally
+    today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    daily_count = Message.objects.filter(
+        role='user',
+        created_at__gte=today_start,
+    ).count()
+    if daily_count >= 1400:
+        return render(request, 'music_theory/_chat_error.html', {
+            'error': '本日のチャット利用上限に達しました。明日またお試しください。'
+        })
+
+    # Get or create conversation
+    conversation = None
+    if conversation_id:
+        try:
+            conversation = Conversation.objects.get(
+                id=int(conversation_id), user=request.user
+            )
+        except (Conversation.DoesNotExist, ValueError):
+            pass
+
+    if not conversation:
+        title = user_message[:50] if len(user_message) > 50 else user_message
+        conversation = Conversation.objects.create(
+            user=request.user, title=title
+        )
+
+    # Save user message
+    user_msg = Message.objects.create(
+        conversation=conversation, role='user', content=user_message
+    )
+
+    # RAG: retrieve relevant context
+    topics, progressions = retrieve_relevant_context(user_message)
+    context_text = format_context_for_prompt(topics, progressions)
+
+    # Get conversation history (last 20 messages for context window)
+    history = list(
+        conversation.messages.exclude(id=user_msg.id).order_by('created_at')[:20]
+    )
+
+    # Call Gemini
+    response_text = get_gemini_response(history, user_message, context_text)
+
+    # Save assistant message
+    assistant_msg = Message.objects.create(
+        conversation=conversation, role='assistant', content=response_text
+    )
+    if topics:
+        assistant_msg.context_topics.set(topics)
+
+    # Update conversation timestamp
+    conversation.save()
+
+    response = render(request, 'music_theory/_chat_messages.html', {
+        'user_message': user_msg,
+        'assistant_message': assistant_msg,
+        'context_topics': topics,
+    })
+    response['HX-Trigger'] = f'{{"chatConversationId": "{conversation.id}"}}'
+    return response
+
+
+@login_required
+def chat_history(request):
+    conversations = Conversation.objects.filter(
+        user=request.user
+    )[:20]
+    return render(request, 'music_theory/_chat_history.html', {
+        'conversations': conversations,
+    })
+
+
+@login_required
+def chat_load(request, conversation_id):
+    conversation = get_object_or_404(
+        Conversation, id=conversation_id, user=request.user
+    )
+    messages = conversation.messages.all().prefetch_related('context_topics')
+    return render(request, 'music_theory/_chat_load.html', {
+        'conversation': conversation,
+        'messages': messages,
+    })

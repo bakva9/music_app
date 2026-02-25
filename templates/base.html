@@ -325,6 +325,242 @@
         </footer>
     </div>
 
+    {% if user.is_authenticated %}
+    <!-- Chat Widget -->
+    <div x-data="chatWidget()" x-cloak class="z-50">
+        <!-- Toggle Button -->
+        <button @click="toggle()"
+                class="fixed bottom-6 right-6 w-14 h-14 rounded-full
+                       bg-cosmic-600/90 hover:bg-cosmic-500/90 text-white
+                       shadow-glow-lg hover:shadow-glow
+                       flex items-center justify-center
+                       transition-all duration-300 hover:scale-110 z-50"
+                :class="open ? 'rotate-0' : 'animate-pulse-glow'">
+            <svg x-show="!open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"/>
+            </svg>
+            <svg x-show="open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/>
+            </svg>
+        </button>
+
+        <!-- Chat Panel -->
+        <div x-show="open"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+             x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+             class="fixed bottom-24 right-6 w-[22rem] sm:w-96 h-[32rem]
+                    bg-cosmic-950/95 backdrop-blur-xl rounded-2xl
+                    border border-white/10 shadow-2xl
+                    flex flex-col overflow-hidden z-50">
+
+            <!-- Header -->
+            <div class="px-4 py-3 border-b border-white/10 flex items-center justify-between flex-shrink-0">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-aurora animate-pulse"></div>
+                    <span class="font-display text-sm font-bold text-white/90">音楽理論チャット</span>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button @click="showHistory = !showHistory"
+                            class="p-1.5 rounded-lg hover:bg-white/5 transition-colors text-white/50 hover:text-white/80"
+                            title="会話履歴">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                        </svg>
+                    </button>
+                    <button @click="newConversation()"
+                            class="p-1.5 rounded-lg hover:bg-white/5 transition-colors text-white/50 hover:text-white/80"
+                            title="新しい会話">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- History Panel (overlay) -->
+            <div x-show="showHistory"
+                 x-transition
+                 class="absolute inset-0 top-[49px] bg-cosmic-950/98 backdrop-blur-xl z-10 overflow-y-auto"
+                 @click.outside="showHistory = false">
+                <div class="p-3">
+                    <h3 class="text-xs font-bold text-white/40 uppercase tracking-wider mb-2 px-1">会話履歴</h3>
+                    <div id="chat-history-list"
+                         hx-get="{% url 'music_theory:chat_history' %}"
+                         hx-trigger="intersect once"
+                         hx-swap="innerHTML">
+                        <div class="text-center py-6">
+                            <div class="loading-spinner mx-auto"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Area -->
+            <div id="chat-messages"
+                 class="flex-1 overflow-y-auto p-3 space-y-3"
+                 x-ref="chatMessages">
+                <!-- Empty state -->
+                <div id="chat-empty-state" class="flex flex-col items-center justify-center h-full text-center px-4">
+                    <svg class="w-10 h-10 text-cosmic-400/30 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2Zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2ZM9 10l12-3"/>
+                    </svg>
+                    <p class="text-sm text-white/30 font-display">音楽理論について<br>なんでも聞いてください</p>
+                    <div class="mt-4 space-y-1.5">
+                        <button @click="sendSuggestion('Cメジャーキーで明るいコード進行を教えて')"
+                                class="block w-full text-left text-xs px-3 py-2 rounded-lg bg-white/5 border border-white/5 text-white/40 hover:text-white/70 hover:bg-white/10 transition-colors">
+                            Cメジャーキーで明るいコード進行を教えて
+                        </button>
+                        <button @click="sendSuggestion('サビで感動的な雰囲気を出すにはどうすればいい？')"
+                                class="block w-full text-left text-xs px-3 py-2 rounded-lg bg-white/5 border border-white/5 text-white/40 hover:text-white/70 hover:bg-white/10 transition-colors">
+                            サビで感動的な雰囲気を出すには？
+                        </button>
+                        <button @click="sendSuggestion('ペンタトニックスケールの使い方を教えて')"
+                                class="block w-full text-left text-xs px-3 py-2 rounded-lg bg-white/5 border border-white/5 text-white/40 hover:text-white/70 hover:bg-white/10 transition-colors">
+                            ペンタトニックスケールの使い方を教えて
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading indicator -->
+            <div id="chat-loading" class="hidden px-4 py-2 flex-shrink-0">
+                <div class="flex items-center gap-2 text-white/30">
+                    <div class="flex gap-1">
+                        <div class="w-1.5 h-1.5 rounded-full bg-cosmic-400 animate-bounce" style="animation-delay: 0ms"></div>
+                        <div class="w-1.5 h-1.5 rounded-full bg-cosmic-400 animate-bounce" style="animation-delay: 150ms"></div>
+                        <div class="w-1.5 h-1.5 rounded-full bg-cosmic-400 animate-bounce" style="animation-delay: 300ms"></div>
+                    </div>
+                    <span class="text-xs">考え中...</span>
+                </div>
+            </div>
+
+            <!-- Input Form -->
+            <form id="chat-form"
+                  hx-post="{% url 'music_theory:chat_send' %}"
+                  hx-target="#chat-messages"
+                  hx-swap="beforeend"
+                  hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                  hx-indicator="#chat-loading"
+                  @htmx:before-request.window="onBeforeRequest($event)"
+                  @htmx:after-request.window="onAfterRequest($event)"
+                  class="p-3 border-t border-white/10 flex-shrink-0">
+                <input type="hidden" name="conversation_id" :value="conversationId">
+                <div class="flex gap-2">
+                    <input type="text" name="message" x-ref="chatInput"
+                           placeholder="作曲について質問..."
+                           autocomplete="off"
+                           class="flex-1 !bg-white/5 !border-white/10 !rounded-xl !text-sm !py-2.5 !px-3
+                                  focus:!border-cosmic-500/50 focus:!shadow-none !text-white/90"
+                           @keydown.enter.prevent="$el.closest('form').requestSubmit()">
+                    <button type="submit"
+                            class="px-3 py-2 rounded-xl bg-cosmic-600/80 hover:bg-cosmic-500/80
+                                   text-white/90 transition-all duration-200 hover:scale-105
+                                   disabled:opacity-30 disabled:hover:scale-100"
+                            :disabled="sending">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    function chatWidget() {
+        return {
+            open: false,
+            conversationId: null,
+            showHistory: false,
+            sending: false,
+
+            toggle() {
+                this.open = !this.open;
+                if (this.open) {
+                    this.$nextTick(() => this.$refs.chatInput?.focus());
+                }
+            },
+
+            newConversation() {
+                this.conversationId = null;
+                this.showHistory = false;
+                const msgArea = document.getElementById('chat-messages');
+                msgArea.innerHTML = document.getElementById('chat-empty-state-template')?.innerHTML || '';
+                this.resetEmptyState();
+            },
+
+            resetEmptyState() {
+                const msgArea = document.getElementById('chat-messages');
+                msgArea.innerHTML = `
+                    <div id="chat-empty-state" class="flex flex-col items-center justify-center h-full text-center px-4">
+                        <svg class="w-10 h-10 text-cosmic-400/30 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2Zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2ZM9 10l12-3"/>
+                        </svg>
+                        <p class="text-sm text-white/30 font-display">音楽理論について<br>なんでも聞いてください</p>
+                    </div>`;
+            },
+
+            loadConversation(id) {
+                this.conversationId = id;
+                this.showHistory = false;
+                const msgArea = document.getElementById('chat-messages');
+                msgArea.innerHTML = '<div class="flex justify-center py-8"><div class="loading-spinner"></div></div>';
+                htmx.ajax('GET', '/theory/chat/' + id + '/', {target: '#chat-messages', swap: 'innerHTML'}).then(() => {
+                    this.scrollToBottom();
+                });
+            },
+
+            sendSuggestion(text) {
+                this.$refs.chatInput.value = text;
+                const emptyState = document.getElementById('chat-empty-state');
+                if (emptyState) emptyState.remove();
+                this.$refs.chatInput.closest('form').requestSubmit();
+            },
+
+            onBeforeRequest(event) {
+                if (event.detail.elt.id !== 'chat-form') return;
+                this.sending = true;
+                const emptyState = document.getElementById('chat-empty-state');
+                if (emptyState) emptyState.remove();
+                document.getElementById('chat-loading').classList.remove('hidden');
+            },
+
+            onAfterRequest(event) {
+                if (event.detail.elt.id !== 'chat-form') return;
+                this.sending = false;
+                document.getElementById('chat-loading').classList.add('hidden');
+                this.$refs.chatInput.value = '';
+                this.$nextTick(() => this.scrollToBottom());
+
+                // Extract conversation ID from HX-Trigger
+                const trigger = event.detail.xhr?.getResponseHeader('HX-Trigger');
+                if (trigger) {
+                    try {
+                        const data = JSON.parse(trigger);
+                        if (data.chatConversationId) {
+                            this.conversationId = data.chatConversationId;
+                        }
+                    } catch(e) {}
+                }
+            },
+
+            scrollToBottom() {
+                const el = document.getElementById('chat-messages');
+                if (el) {
+                    this.$nextTick(() => {
+                        el.scrollTop = el.scrollHeight;
+                    });
+                }
+            }
+        }
+    }
+    </script>
+    {% endif %}
+
     <!-- HTMX Progress Bar Script -->
     <script>
         (function() {

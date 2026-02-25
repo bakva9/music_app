@@ -1,0 +1,17 @@
+{% if conversations %}
+<div class="space-y-1">
+    {% for conv in conversations %}
+    <button type="button"
+            class="w-full text-left px-3 py-2 rounded-lg hover:bg-white/5 transition-colors group"
+            @click="loadConversation({{ conv.id }})"
+            :class="conversationId == {{ conv.id }} ? 'bg-white/10' : ''">
+        <div class="text-sm text-white/80 truncate group-hover:text-white transition-colors">{{ conv.title }}</div>
+        <div class="text-[10px] text-white/30 mt-0.5">{{ conv.updated_at|timesince }}前</div>
+    </button>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-6 text-white/30 text-sm">
+    まだ会話がありません
+</div>
+{% endif %}

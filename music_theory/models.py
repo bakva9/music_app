@@ -90,3 +90,46 @@ class ChordProgression(models.Model):
 
     def chord_list(self):
         return [c.strip() for c in self.chords_in_c.split('→') if c.strip()]
+
+
+class Conversation(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name='chat_conversations'
+    )
+    title = models.CharField('タイトル', max_length=200, default='新しい会話')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+        verbose_name = 'チャット会話'
+        verbose_name_plural = 'チャット会話'
+
+    def __str__(self):
+        return f'{self.user} - {self.title}'
+
+
+class Message(models.Model):
+    ROLE_CHOICES = [
+        ('user', 'ユーザー'),
+        ('assistant', 'アシスタント'),
+    ]
+
+    conversation = models.ForeignKey(
+        Conversation, on_delete=models.CASCADE, related_name='messages'
+    )
+    role = models.CharField('役割', max_length=10, choices=ROLE_CHOICES)
+    content = models.TextField('内容')
+    context_topics = models.ManyToManyField(
+        Topic, blank=True, verbose_name='参照トピック'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+        verbose_name = 'チャットメッセージ'
+        verbose_name_plural = 'チャットメッセージ'
+
+    def __str__(self):
+        return f'{self.get_role_display()}: {self.content[:50]}'

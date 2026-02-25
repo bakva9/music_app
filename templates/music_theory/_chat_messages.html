@@ -1,0 +1,31 @@
+<!-- User message -->
+<div class="flex justify-end animate-fade-in-up">
+    <div class="max-w-[80%] bg-cosmic-500/20 border border-cosmic-500/20 rounded-2xl rounded-br-md px-4 py-2.5">
+        <p class="text-sm text-white/90 whitespace-pre-wrap">{{ user_message.content }}</p>
+        <span class="text-[10px] text-white/30 mt-1 block text-right">{{ user_message.created_at|date:"H:i" }}</span>
+    </div>
+</div>
+
+<!-- Assistant message -->
+<div class="flex justify-start animate-fade-in-up" style="animation-delay: 100ms; animation-fill-mode: both;">
+    <div class="max-w-[85%]">
+        <div class="bg-white/5 border border-white/10 rounded-2xl rounded-bl-md px-4 py-2.5">
+            <p class="text-sm text-white/80 whitespace-pre-wrap leading-relaxed">{{ assistant_message.content }}</p>
+            <span class="text-[10px] text-white/30 mt-1 block">{{ assistant_message.created_at|date:"H:i" }}</span>
+        </div>
+        {% if context_topics %}
+        <div class="flex flex-wrap gap-1 mt-1.5 px-1">
+            {% for topic in context_topics %}
+            <a href="{% url 'music_theory:topic_detail' topic.slug %}"
+               class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full
+                      bg-cosmic-500/10 border border-cosmic-500/20 text-cosmic-300
+                      hover:bg-cosmic-500/20 transition-colors"
+               target="_blank">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                {{ topic.title }}
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>

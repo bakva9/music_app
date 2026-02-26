@@ -2,7 +2,7 @@
 <html lang="ja" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}残音{% endblock %}</title>
     <!-- PWA -->
     <link rel="manifest" href="{% static 'manifest.json' %}">
@@ -298,6 +298,25 @@
             .glass-card { background: rgba(74, 14, 30, 0.85) !important; }
         }
 
+        /* === PWA Chat Widget Positioning === */
+        .chat-toggle-btn {
+            bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+            right: calc(1.5rem + env(safe-area-inset-right, 0px));
+        }
+        .chat-panel {
+            bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+            right: 0.75rem;
+            left: 0.75rem;
+            max-height: calc(100dvh - 7rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+        }
+        @media (min-width: 640px) {
+            .chat-panel {
+                left: auto;
+                right: calc(1.5rem + env(safe-area-inset-right, 0px));
+                width: 24rem;
+            }
+        }
+
         /* === Accessibility: Reduced Motion === */
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
@@ -366,7 +385,7 @@
     <div x-data="chatWidget()" x-cloak class="z-50">
         <!-- Toggle Button -->
         <button @click="toggle()"
-                class="fixed bottom-6 right-6 w-14 h-14 rounded-full
+                class="fixed w-14 h-14 rounded-full chat-toggle-btn
                        bg-cosmic-600/90 hover:bg-cosmic-500/90 text-white
                        shadow-glow-lg hover:shadow-glow
                        flex items-center justify-center
@@ -388,7 +407,7 @@
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
              x-transition:leave-end="opacity-0 translate-y-4 scale-95"
-             class="fixed bottom-24 right-6 w-[22rem] sm:w-96 h-[32rem]
+             class="fixed h-[32rem] chat-panel
                     bg-cosmic-950/95 backdrop-blur-xl rounded-2xl
                     border border-white/10 shadow-2xl
                     flex flex-col overflow-hidden z-50">

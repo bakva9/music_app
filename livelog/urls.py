@@ -4,6 +4,7 @@ from . import views
 app_name = 'livelog'
 
 urlpatterns = [
+    path('share/<uuid:token>/', views.event_share, name='event_share'),
     path('', views.event_list, name='event_list'),
     path('create/', views.event_create, name='event_create'),
     path('<int:pk>/', views.event_detail, name='event_detail'),

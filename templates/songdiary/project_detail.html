@@ -30,7 +30,8 @@
             {% endif %}
         </div>
         <div class="flex items-center gap-2">
-            {% include "partials/_share_button.html" with share_title=project.title share_text=project.description %}
+            {% url 'songdiary:project_share' project.share_token as share_link %}
+            {% include "partials/_share_button.html" with share_title=project.title share_text=project.description share_url=share_link %}
             <a href="{% url 'songdiary:project_edit' project.pk %}" class="text-sm text-cosmic-500 dark:text-cosmic-300 hover:text-cosmic-400 dark:hover:text-cosmic-200 transition-colors">編集</a>
             <a href="{% url 'songdiary:project_delete' project.pk %}" class="text-sm text-comet dark:text-comet/80 hover:underline">削除</a>
         </div>

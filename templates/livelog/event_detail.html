@@ -27,7 +27,8 @@
             </div>
         </div>
         <div class="flex items-center gap-2">
-            {% include "partials/_share_button.html" with share_title=event.artist share_text=event.title %}
+            {% url 'livelog:event_share' event.share_token as share_link %}
+            {% include "partials/_share_button.html" with share_title=event.artist share_text=event.title share_url=share_link %}
             <a href="{% url 'livelog:event_edit' event.pk %}" class="text-sm text-cosmic-500 dark:text-cosmic-300 hover:text-cosmic-400 dark:hover:text-cosmic-200 transition-colors">編集</a>
             <a href="{% url 'livelog:event_delete' event.pk %}" class="text-sm text-comet dark:text-comet/80 hover:underline">削除</a>
         </div>

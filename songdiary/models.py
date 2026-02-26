@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.conf import settings
 
@@ -14,6 +15,7 @@ class Project(models.Model):
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='compose_projects')
+    share_token = models.UUIDField('共有トークン', default=uuid.uuid4, unique=True, editable=False)
     title = models.CharField('タイトル', max_length=200)
     status = models.CharField('ステータス', max_length=20, choices=STATUS_CHOICES, default='idea')
     key = models.CharField('キー', max_length=10, blank=True)

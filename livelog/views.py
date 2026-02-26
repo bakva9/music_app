@@ -49,6 +49,20 @@ def event_edit(request, pk):
     return render(request, 'livelog/event_form.html', {'form': form, 'is_edit': True, 'event': event})
 
 
+def event_share(request, token):
+    event = get_object_or_404(
+        LiveEvent.objects.prefetch_related('setlist', 'expenses'),
+        share_token=token
+    )
+    ticket = getattr(event, 'ticket', None)
+    impression = getattr(event, 'impression', None)
+    return render(request, 'livelog/event_share.html', {
+        'event': event,
+        'ticket': ticket,
+        'impression': impression,
+    })
+
+
 @login_required
 def event_detail(request, pk):
     event = get_object_or_404(

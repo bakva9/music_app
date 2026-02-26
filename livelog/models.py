@@ -1,9 +1,11 @@
+import uuid
 from django.db import models
 from django.conf import settings
 
 
 class LiveEvent(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='live_events')
+    share_token = models.UUIDField('共有トークン', default=uuid.uuid4, unique=True, editable=False)
     artist = models.CharField('アーティスト', max_length=200)
     title = models.CharField('公演名', max_length=300, blank=True)
     date = models.DateField('公演日')

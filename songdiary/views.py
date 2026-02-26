@@ -45,6 +45,14 @@ def project_edit(request, pk):
     return render(request, 'songdiary/project_form.html', {'form': form, 'is_edit': True, 'project': project})
 
 
+def project_share(request, token):
+    project = get_object_or_404(
+        Project.objects.prefetch_related('memos'),
+        share_token=token
+    )
+    return render(request, 'songdiary/project_share.html', {'project': project})
+
+
 @login_required
 def project_detail(request, pk):
     project = get_object_or_404(

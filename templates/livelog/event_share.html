@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.artist }} - 残音{% endblock %}
+
+{% block extra_head %}
+<meta property="og:title" content="{{ event.artist }} - 残音">
+<meta property="og:description" content="{% if event.title %}{{ event.title }} - {% endif %}{{ event.date|date:'Y年m月d日' }}{% if event.venue %} @ {{ event.venue }}{% endif %}">
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <!-- Thumbnail -->
+    {% if event.thumbnail %}
+    <div class="mb-6 rounded-2xl overflow-hidden border border-cosmic-200/30 dark:border-white/10">
+        <img src="{{ event.thumbnail.url }}" alt="{{ event.artist }}" class="w-full max-h-64 object-cover">
+    </div>
+    {% endif %}
+
+    <!-- Header -->
+    <div class="mb-6">
+        <div class="flex items-start gap-4">
+            {% if event.artist_image_url %}
+            <img src="{{ event.artist_image_url }}" alt="{{ event.artist }}" class="w-16 h-16 rounded-full object-cover border border-white/10 flex-shrink-0">
+            {% endif %}
+            <div>
+                <h1 class="font-display text-2xl font-bold text-cosmic-800 dark:text-white text-glow">{{ event.artist }}</h1>
+                {% if event.title %}<p class="text-cosmic-600/60 dark:text-white/50">{{ event.title }}</p>{% endif %}
+                <div class="flex gap-3 mt-2 text-sm text-cosmic-600/60 dark:text-white/50">
+                    <span>{{ event.date|date:"Y年m月d日" }}</span>
+                    {% if event.venue %}<span>@ {{ event.venue }}</span>{% endif %}
+                </div>
+                <p class="text-xs text-cosmic-600/40 dark:text-white/30 mt-2">by {{ event.user.display_name|default:event.user.username }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticket Info -->
+    {% if ticket %}
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 mb-4">
+        <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-3">チケット情報</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+            <div><span class="text-cosmic-600/60 dark:text-white/50">種別:</span> {{ ticket.get_ticket_type_display }}</div>
+            {% if ticket.seat_info %}<div><span class="text-cosmic-600/60 dark:text-white/50">座席:</span> {{ ticket.seat_info }}</div>{% endif %}
+            {% if ticket.price %}<div><span class="text-cosmic-600/60 dark:text-white/50">価格:</span> ¥{{ ticket.price|floatformat:"0" }}</div>{% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Setlist -->
+    {% if event.setlist.all %}
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 mb-4">
+        <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-3">セットリスト</h2>
+        <div class="space-y-1">
+            {% for entry in event.setlist.all %}
+            <div class="flex items-center gap-3 text-sm py-1">
+                <span class="w-6 text-right text-cosmic-600/60 dark:text-white/50 font-mono">{{ entry.order }}</span>
+                <span class="flex-1">{{ entry.song_title }}</span>
+                {% if entry.song_type != 'normal' %}
+                <span class="text-xs px-2 py-0.5 rounded-lg bg-stardust/10 text-stardust">{{ entry.get_song_type_display }}</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Impression -->
+    {% if impression %}
+    <div class="bg-white/80 dark:bg-white/5 backdrop-blur-md rounded-2xl p-5 border border-cosmic-200/30 dark:border-white/10 mb-4">
+        <h2 class="font-display text-lg font-bold text-cosmic-800 dark:text-white/90 mb-3">感想</h2>
+        <div class="text-stardust mb-2">{% for i in "12345" %}{% if forloop.counter <= impression.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+        <p class="text-sm whitespace-pre-line">{{ impression.text }}</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
